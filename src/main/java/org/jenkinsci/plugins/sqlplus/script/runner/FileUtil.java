@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner;
+package org.jenkinsci.plugins.sqlplus.script.runner;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 
 public class FileUtil {
 
@@ -75,16 +75,19 @@ public class FileUtil {
 
 	}
 
-	public static FilePath createTempScript(AbstractBuild<?, ?> build, String content) {
+	@SuppressWarnings("static-access")
+	public static FilePath createTempScript(Run<?, ?> build, String content) {
 
 		FilePath filePath = null;
 		try {
 
-			filePath = build.getModuleRoot().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);
+			filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));
+			
 			filePath.write(content, StandardCharsets.UTF_8.name());
 
 			if (!FileUtil.hasExitCode(filePath))
-				addExit(content, filePath);
+				addExit(content
+						, filePath);
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner.test;
+package org.jenkinsci.plugins.sqlplus.script.runner.test;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.Map;
 
-import org.jenkinsci.plugins.sqlplusscriptrunner.ScriptType;
+import org.jenkinsci.plugins.sqlplus.script.runner.ScriptType;
 
 public class ExternalProgramUtil {
 

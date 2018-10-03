@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner.test;
+package org.jenkinsci.plugins.sqlplus.script.runner.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.jenkinsci.plugins.sqlplusscriptrunner.FileUtil;
+import org.jenkinsci.plugins.sqlplus.script.runner.FileUtil;
 import org.junit.Test;
 
 import hudson.FilePath;

@@ -48,12 +48,34 @@ https://github.com/boaglio/jenkins-plugin-sqlplus-script-runner/releases
 8. Try it at http://localhost:8080
 9. Commit and submit pull request
 
+# Pipeline
+
+## user defined script
+ 
+node {
+   echo 'SQLPlusRunner running user define script for system@xe'
+   step([$class: 'SQLPlusRunnerBuilder',credentialsId:'system', instance:'xe',scriptType:'userDefined', script: '',scriptContent: 'select * from v$version'])
+}
+
+## file script
+
+node {
+   echo 'SQLPlusRunner running file script for system@xe'
+   step([$class: 'SQLPlusRunnerBuilder',credentialsId:'system', instance:'xe',scriptType:'file', script: 'start.sql',scriptContent: ''])
+}
+
+### Optional parameters
+
+* customOracleHome
+* customSQLPlusHome
+* customTNSAdmin
+
 # Having problems?
 
 Please [open a new issue](https://github.com/jenkinsci/sqlplus-script-runner-plugin/issues/new)  and inform:
 
 - Jenkins server Operation System;
-- Jenkins version ;
+- Jenkins version;
 - Where SQLPlus Script Runner is running (local machine or slave machine);
 - Slave machine Operation System (if applicable);
 - Oracle Database version;

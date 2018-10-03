@@ -12,12 +12,20 @@
 	</f:entry>
 
 	<f:entry title="${%Try to detect ORACLE_HOME}" field="tryToDetectOracleHome">
-		<f:checkbox />
+		<f:checkbox default="true" />
 	</f:entry>
 
-	<f:entry title="${%Set global ORACLE_HOME}" field="oracleHome">
+	<f:entry title="${%Set global ORACLE_HOME}" field="globalOracleHome">
 		<f:textbox />
 	</f:entry>
 
+    <f:entry title="${%Set global SQLPLUS_HOME}" field="globalSQLPlusHome" >
+	    <f:textbox />
+	</f:entry>
+	
+	<f:entry title="${%Set global TNS_ADMIN}" field="globalTNSAdmin" >
+	   <f:textbox />
+	</f:entry>
+  
  </f:section>
 </j:jelly>

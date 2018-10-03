@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.jenkinsci.plugins.sqlplusscriptrunner;
+package org.jenkinsci.plugins.sqlplus.script.runner;
 
 /**
  * {@link SQLPlusRunner} exception.

@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner;
+package org.jenkinsci.plugins.sqlplus.script.runner;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

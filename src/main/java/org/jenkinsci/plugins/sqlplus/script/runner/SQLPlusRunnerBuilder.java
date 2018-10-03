@@ -1,10 +1,12 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner;
+package org.jenkinsci.plugins.sqlplus.script.runner;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.cloudbees.plugins.credentials.Credentials;
@@ -16,15 +18,17 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.model.Computer;
 import hudson.model.ItemGroup;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import hudson.tasks.BuildStepDescriptor;
@@ -32,12 +36,12 @@ import hudson.tasks.Builder;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 @SuppressFBWarnings
-public class SQLPlusRunnerBuilder extends Builder {
+@Symbol("sqlplusrunner")
+public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 	private final String credentialsId;
 	private final String user;
@@ -46,31 +50,26 @@ public class SQLPlusRunnerBuilder extends Builder {
 	private final String scriptType;
 	private final String script;
 	private final String scriptContent;
-	private final String customOracleHome;
-	private final String customSQLPlusHome;
-	private final String customTNSAdmin;
+	
+	private   String customOracleHome;
+	private   String customSQLPlusHome;
+	private   String customTNSAdmin;
 
-	/**
-	 * @deprecated removed user and password in favour of credentials
-	 */
-	@Deprecated
-	public SQLPlusRunnerBuilder(String user, String password, String instance, String scriptType, String script,
-			String scriptContent, String customOracleHome,String customSQLPlusHome,String customTNSAdmin) {
-		this.credentialsId = null;
-		this.user = user;
-		this.password = password;
+	
+	@DataBoundConstructor
+	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,String scriptContent) {
+		this.credentialsId = credentialsId;
+		this.user = null;
+		this.password = null;
 		this.instance = instance;
 		this.scriptType = scriptType;
 		this.script = script;
 		this.scriptContent = scriptContent;
-		this.customOracleHome = customOracleHome;
-		this.customSQLPlusHome = customSQLPlusHome;
-		this.customTNSAdmin = customTNSAdmin;
 	}
-
-	@DataBoundConstructor
+	
+	@Deprecated
 	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
-			String scriptContent, String customOracleHome,String customSQLPlusHome,String customTNSAdmin) {
+			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin) {
 		this.credentialsId = credentialsId;
 		this.user = null;
 		this.password = null;
@@ -80,6 +79,21 @@ public class SQLPlusRunnerBuilder extends Builder {
 		this.scriptContent = scriptContent;
 		this.customOracleHome = customOracleHome;
 		this.customSQLPlusHome = customSQLPlusHome;
+		this.customTNSAdmin = customTNSAdmin;
+	}
+	
+	@DataBoundSetter
+	public void setCustomOracleHome(String customOracleHome) {
+		this.customOracleHome = customOracleHome;
+	}
+
+	@DataBoundSetter
+	public void setCustomSQLPlusHome(String customSQLPlusHome) {
+		this.customSQLPlusHome = customSQLPlusHome;
+	}
+
+	@DataBoundSetter
+	public void setCustomTNSAdmin(String customTNSAdmin) {
 		this.customTNSAdmin = customTNSAdmin;
 	}
 
@@ -119,8 +133,12 @@ public class SQLPlusRunnerBuilder extends Builder {
 		return customTNSAdmin;
 	}
 
+	public String getCredentialsId() {
+		return credentialsId;
+	}
+
 	@Override
-	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener)
+	public void perform(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener)
 			throws InterruptedException, IOException {
 
 		String sqlScript;
@@ -146,9 +164,10 @@ public class SQLPlusRunnerBuilder extends Builder {
 
 		EnvVars env = build.getEnvironment(listener);
 
-		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build,listener, launcher, getDescriptor().isHideSQLPlusVersion(), usr,
-				pwd, env.expand(instance), env.expand(sqlScript), getDescriptor().oracleHome, scriptType,
-				customOracleHome,customSQLPlusHome,customTNSAdmin, getDescriptor().tryToDetectOracleHome, getDescriptor().isDebug());
+		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher,
+				getDescriptor().isHideSQLPlusVersion(), usr, pwd, env.expand(instance), env.expand(sqlScript),
+				getDescriptor().globalOracleHome,getDescriptor().globalSQLPlusHome ,getDescriptor().globalTNSAdmin, scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin,
+				getDescriptor().tryToDetectOracleHome, getDescriptor().isDebug());
 
 		try {
 
@@ -160,7 +179,6 @@ public class SQLPlusRunnerBuilder extends Builder {
 			throw new AbortException(e.getMessage());
 		}
 
-		return true;
 	}
 
 	@Override
@@ -172,15 +190,19 @@ public class SQLPlusRunnerBuilder extends Builder {
 	public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
 
 		private static final String DISPLAY_MESSAGE = "SQLPlus Script Runner";
-		private static final String ORACLE_HOME = "oracleHome";
+		private static final String GLOBAL_ORACLE_HOME = "globalOracleHome";
+		private static final String GLOBAL_SQLPLUS_HOME = "globalSQLPlusHome";
+		private static final String GLOBAL_TNS_ADMIN = "globalTNSAdmin";
 		private static final String HIDE_SQL_PLUS_VERSION = "hideSQLPlusVersion";
 		private static final String TRY_TO_DETECT_ORACLE_HOME = "tryToDetectOracleHome";
 		private static final String DEBUG = "debug";
 		private boolean hideSQLPlusVersion;
 		private boolean tryToDetectOracleHome;
 		private boolean debug;
-		private String oracleHome;
-
+		private String globalOracleHome;
+		private String globalSQLPlusHome;
+		private String globalTNSAdmin;
+		
 		public DescriptorImpl() {
 			load();
 		}
@@ -198,7 +220,9 @@ public class SQLPlusRunnerBuilder extends Builder {
 		@Override
 		public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
 			hideSQLPlusVersion = formData.getBoolean(HIDE_SQL_PLUS_VERSION);
-			oracleHome = formData.getString(ORACLE_HOME);
+			globalOracleHome = formData.getString(GLOBAL_ORACLE_HOME);
+			globalSQLPlusHome = formData.getString(GLOBAL_SQLPLUS_HOME);
+			globalTNSAdmin = formData.getString(GLOBAL_TNS_ADMIN);
 			tryToDetectOracleHome = formData.getBoolean(TRY_TO_DETECT_ORACLE_HOME);
 			debug = formData.getBoolean(DEBUG);
 			save();
@@ -230,13 +254,30 @@ public class SQLPlusRunnerBuilder extends Builder {
 		}
 
 		public String getOracleHome() {
-			return oracleHome;
+			return globalOracleHome;
 		}
 
-		public void setOracleHome(String oracleHome) {
-			this.oracleHome = oracleHome;
+		public void setOracleHome(String globalOracleHome) {
+			this.globalOracleHome = globalOracleHome;
 		}
 
+		public String getGlobalSQLPlusHome() {
+			return globalSQLPlusHome;
+		}
+
+		public void setGlobalSQLPlusHome(String globalSQLPlusHome) {
+			this.globalSQLPlusHome = globalSQLPlusHome;
+		}
+
+		public String getGlobalTNSAdmin() {
+			return globalTNSAdmin;
+		}
+
+		public void setGlobalTNSAdmin(String globalTNSAdmin) {
+			this.globalTNSAdmin = globalTNSAdmin;
+		}
+
+		@SuppressWarnings("deprecation")
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context) {
 			if (!(context instanceof AccessControlled ? (AccessControlled) context : Jenkins.getInstance())
 					.hasPermission(Computer.CONFIGURE)) {
@@ -253,4 +294,5 @@ public class SQLPlusRunnerBuilder extends Builder {
 					null));
 		}
 	}
+
 }

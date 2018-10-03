@@ -1,11 +1,11 @@
-package org.jenkinsci.plugins.sqlplusscriptrunner.test;
+package org.jenkinsci.plugins.sqlplus.script.runner.test;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.jenkinsci.plugins.sqlplusscriptrunner.ScriptType;
+import org.jenkinsci.plugins.sqlplus.script.runner.ScriptType;
 import org.junit.Ignore;
 import org.junit.Test;
 
