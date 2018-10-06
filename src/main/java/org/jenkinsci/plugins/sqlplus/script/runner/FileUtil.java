@@ -9,6 +9,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 import hudson.model.Run;
 
 public class FileUtil {
@@ -76,12 +77,16 @@ public class FileUtil {
 	}
 
 	@SuppressWarnings("static-access")
-	public static FilePath createTempScript(Run<?, ?> build, String content) {
+	public static FilePath createTempScript(Run<?, ?> build, String content,boolean slaveMachine) {
 
 		FilePath filePath = null;
 		try {
 
-			filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));
+			if (slaveMachine) {
+             filePath = ((AbstractBuild<?, ?>) build).getModuleRoot().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);
+			}  else {
+			 filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));
+            }
 			
 			filePath.write(content, StandardCharsets.UTF_8.name());
 
