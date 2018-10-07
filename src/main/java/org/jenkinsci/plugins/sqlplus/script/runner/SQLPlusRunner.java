@@ -489,7 +489,7 @@ public class SQLPlusRunner implements Serializable {
 				sqlplus = SQLPLUS_FOR_WINDOWS;
 				fileSeparator = WINDOWS_FILE_SEPARATOR;
 			}
-			
+
 			EnvVars envVars = new EnvVars();
 			envVars.put(ENV_ORACLE_HOME, oracleHome);
 			if (debug)
@@ -573,10 +573,21 @@ public class SQLPlusRunner implements Serializable {
 
 	private boolean isWindowsOS(boolean slaveMachine) throws IOException, InterruptedException {
 
-		if (slaveMachine)
-			return build.getEnvironment(listener).get(OPERATION_SYSTEM_SLAVE).toLowerCase().indexOf(WINDOWS_OS) >= 0;
+		boolean isWindows = false;
 
-		return System.getProperty(OPERATION_SYSTEM).toLowerCase().indexOf(WINDOWS_OS) >= 0;
+		if (slaveMachine) {
+			String osSlave = build.getEnvironment(listener).get(OPERATION_SYSTEM_SLAVE);
+			if (osSlave != null) {
+				isWindows = osSlave.toLowerCase().indexOf(WINDOWS_OS) >= 0;
+			}
+		} else {
+			String osMaster = System.getProperty(OPERATION_SYSTEM);
+			if (osMaster != null) {
+				isWindows = osMaster.toLowerCase().indexOf(WINDOWS_OS) >= 0;
+			}
+		}
+
+		return isWindows;
 
 	}
 
