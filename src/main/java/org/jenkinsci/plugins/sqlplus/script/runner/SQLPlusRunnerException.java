@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.jenkinsci.plugins.sqlplus.script.runner;
 
@@ -17,7 +17,6 @@ public class SQLPlusRunnerException extends Exception {
 	 * Default constructor.
 	 */
 	public SQLPlusRunnerException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

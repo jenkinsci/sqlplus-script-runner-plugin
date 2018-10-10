@@ -9,7 +9,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 
 public class FileUtil {
@@ -20,85 +19,65 @@ public class FileUtil {
 	private static final String SQL_TEMP_SCRIPT = "temp-script-";
 	private static final String SQL_PREFIX = ".sql";
 
-	public static boolean hasExitCode(FilePath filePath) {
+	private FileUtil() {
+	}
+
+	public static boolean hasExitCode(FilePath filePath) throws IOException, InterruptedException {
 
 		boolean found = false;
-		try {
 
-			InputStream in = filePath.read();
-			Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
-			BufferedReader br = new BufferedReader(reader);
+		InputStream in = filePath.read();
+		Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+		BufferedReader br = new BufferedReader(reader);
 
-			String lastLine = "";
-			String line;
-			while ((line = br.readLine()) != null) {
-				if (line.length() >= SQLPLUS_STR_LENGTH)
-					lastLine = line;
-			}
-
-			if (lastLine.trim().equalsIgnoreCase(SQLPLUS_EXIT))
-				found = true;
-
-			br.close();
-			reader.close();
-			in.close();
-		} catch (IOException exc) {
-			System.out.println(exc);
-		} catch (InterruptedException ie) {
-			System.out.println(ie);
+		String lastLine = "";
+		String line;
+		while ((line = br.readLine()) != null) {
+			if (line.length() >= SQLPLUS_STR_LENGTH)
+				lastLine = line;
 		}
+
+		if (lastLine.trim().equalsIgnoreCase(SQLPLUS_EXIT))
+			found = true;
+
+		br.close();
+		reader.close();
+		in.close();
+
 		return found;
 	}
 
+	public static void addExit(String content, FilePath filePath) throws IOException, InterruptedException {
 
+		if (content != null)
+			filePath.write(content + LAST_CMD_BEFORE_EXIT + SQLPLUS_EXIT, StandardCharsets.UTF_8.name());
 
-	public static void addExit(String content, FilePath filePath) throws IOException {
-
-		try {
-
-			if (content != null)
-				filePath.write(content + LAST_CMD_BEFORE_EXIT + SQLPLUS_EXIT, StandardCharsets.UTF_8.name());
-
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
-	public static void addExitInTheEnd(FilePath filePath) throws IOException {
+	public static void addExitInTheEnd(FilePath filePath) throws IOException, InterruptedException {
 
-		try {
-			
-            String content = filePath.readToString();                        
-            filePath.write(content + LAST_CMD_BEFORE_EXIT + SQLPLUS_EXIT, StandardCharsets.UTF_8.name());
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
-		}
+		String content = filePath.readToString();
+		filePath.write(content + LAST_CMD_BEFORE_EXIT + SQLPLUS_EXIT, StandardCharsets.UTF_8.name());
 
 	}
 
 	@SuppressWarnings("static-access")
-	public static FilePath createTempScript(Run<?, ?> build, String content,boolean slaveMachine) {
+	public static FilePath createTempScript(Run<?, ?> build, FilePath workspace, String content, boolean slaveMachine)
+			throws IOException, InterruptedException {
 
 		FilePath filePath = null;
-		try {
 
-			if (slaveMachine) {
-             filePath = ((AbstractBuild<?, ?>) build).getModuleRoot().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);
-			}  else {
-			 filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));
-            }
-			
-			filePath.write(content, StandardCharsets.UTF_8.name());
-
-			if (!FileUtil.hasExitCode(filePath))
-				addExit(content
-						, filePath);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (slaveMachine) {
+			filePath = workspace.createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);
+		} else {
+			filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));
 		}
+
+		filePath.write(content, StandardCharsets.UTF_8.name());
+
+		if (!FileUtil.hasExitCode(filePath))
+			addExit(content, filePath);
+
 		return filePath;
 
 	}

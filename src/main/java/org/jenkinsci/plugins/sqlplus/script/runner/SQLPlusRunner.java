@@ -8,7 +8,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.remoting.LocalChannel;
@@ -20,6 +19,8 @@ import hudson.util.ArgumentListBuilder;
  */
 @SuppressFBWarnings
 public class SQLPlusRunner implements Serializable {
+
+	private static final String FOUND_SQL_PLUS_ON = "found SQL*Plus on ";
 
 	private static final String WINDOWS_FILE_SEPARATOR = "\\";
 
@@ -94,13 +95,15 @@ public class SQLPlusRunner implements Serializable {
 
 	private static final int PROCESS_EXIT_CODE_SUCCESSFUL = 0;
 
-	public SQLPlusRunner(Run<?, ?> build, TaskListener listener, Launcher launcher, boolean isHideSQLPlusVersion,
-			String user, String password, String instance, String script, String globalOracleHome,
-			String globalSQLPlusHome, String globalTNSAdmin, String scriptType, String customOracleHome,
-			String customSQLPlusHome, String customTNSAdmin, boolean tryToDetectOracleHome, boolean debug) {
+	public SQLPlusRunner(Run<?, ?> build, TaskListener listener, Launcher launcher, FilePath workspace,
+			boolean isHideSQLPlusVersion, String user, String password, String instance, String script,
+			String globalOracleHome, String globalSQLPlusHome, String globalTNSAdmin, String scriptType,
+			String customOracleHome, String customSQLPlusHome, String customTNSAdmin, boolean tryToDetectOracleHome,
+			boolean debug) {
 		this.build = build;
 		this.listener = listener;
 		this.launcher = launcher;
+		this.workspace = workspace;
 		this.isHideSQLPlusVersion = isHideSQLPlusVersion;
 		this.user = user;
 		this.password = password;
@@ -122,6 +125,8 @@ public class SQLPlusRunner implements Serializable {
 	private final TaskListener listener;
 
 	private final Launcher launcher;
+
+	private final FilePath workspace;
 
 	private final boolean isHideSQLPlusVersion;
 
@@ -153,7 +158,7 @@ public class SQLPlusRunner implements Serializable {
 
 	/**
 	 * Main process to run SQLPlus
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
@@ -275,15 +280,14 @@ public class SQLPlusRunner implements Serializable {
 		FilePath scriptFilePath = null;
 		if (ScriptType.userDefined.name().equals(scriptType)) {
 			listener.getLogger().println(MSG_DEFINED_SCRIPT + " " + user + SLASH + HIDDEN_PASSWORD + AT + instanceStr);
-			scriptFilePath = FileUtil.createTempScript(build, script, slaveMachine);
+			scriptFilePath = FileUtil.createTempScript(build, workspace, script, slaveMachine);
 			tempScript = scriptFilePath;
 			listener.getLogger().println(MSG_TEMP_SCRIPT + " " + scriptFilePath.absolutize().toURI());
 		} else {
 
 			String strScript = null;
 			if (slaveMachine) {
-				scriptFilePath = new FilePath(
-						new File(((AbstractBuild<?, ?>) build).getWorkspace().getRemote() + fileSeparator + script));
+				scriptFilePath = new FilePath(new File(workspace.getRemote() + fileSeparator + script));
 			} else {
 				if (build.getRootDir() != null) {
 					strScript = build.getRootDir() + fileSeparator + script;
@@ -297,11 +301,11 @@ public class SQLPlusRunner implements Serializable {
 						+ SLASH + HIDDEN_PASSWORD + AT + instanceStr);
 			if (debug)
 				listener.getLogger().println(DEBUG_MSG + "testing script " + scriptFilePath.getRemote());
-			if (scriptFilePath != null && !scriptFilePath.exists() && !slaveMachine) {
+			if (!slaveMachine && scriptFilePath != null && !scriptFilePath.exists()) {
 				throw new RuntimeException(
 						Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote() + fileSeparator + script));
 			}
-			if (scriptFilePath != null && !FileUtil.hasExitCode(scriptFilePath))
+			if (!slaveMachine && scriptFilePath != null && !FileUtil.hasExitCode(scriptFilePath))
 				FileUtil.addExitInTheEnd(scriptFilePath);
 		}
 
@@ -376,13 +380,13 @@ public class SQLPlusRunner implements Serializable {
 
 				if (findSQLPlusOnOracleHomeBin) {
 					if (debug)
-						listener.getLogger().println(DEBUG_MSG + "found SQL*Plus on "
+						listener.getLogger().println(DEBUG_MSG + FOUND_SQL_PLUS_ON
 								+ new File(selectedOracleHome + fileSeparator + BIN_DIR).getAbsolutePath());
 					args.add(selectedOracleHome + fileSeparator + BIN_DIR + fileSeparator + sqlplus);
 				} else if (findSQLPlusOnOracleHome) {
 					if (debug)
 						listener.getLogger().println(
-								DEBUG_MSG + "found SQL*Plus on " + new File(selectedOracleHome).getAbsolutePath());
+								DEBUG_MSG + FOUND_SQL_PLUS_ON + new File(selectedOracleHome).getAbsolutePath());
 					args.add(selectedOracleHome + fileSeparator + sqlplus);
 				} else if (slaveMachine) {
 					listener.getLogger().println("SQL*Plus directory: " + selectedOracleHome + fileSeparator + BIN_DIR);
@@ -408,7 +412,7 @@ public class SQLPlusRunner implements Serializable {
 			}
 
 			if (slaveMachine) {
-				FilePath pwdDir = ((AbstractBuild<?, ?>) build).getModuleRoot();
+				FilePath pwdDir = workspace;
 				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
 						.pwd(pwdDir).join();
 			} else {
@@ -447,7 +451,7 @@ public class SQLPlusRunner implements Serializable {
 
 	/**
 	 * Get SQL Plus version
-	 * 
+	 *
 	 * @param customSQLPlusHome
 	 * @param oracleHome
 	 * @param listener
@@ -515,10 +519,10 @@ public class SQLPlusRunner implements Serializable {
 
 				if (findSQLPlusOnOracleHomeBin) {
 					listener.getLogger().println(
-							"found SQL*Plus on " + new File(oracleHome + fileSeparator + BIN_DIR).getAbsolutePath());
+							FOUND_SQL_PLUS_ON + new File(oracleHome + fileSeparator + BIN_DIR).getAbsolutePath());
 					args.add(oracleHome + fileSeparator + BIN_DIR + fileSeparator + sqlplus);
 				} else if (findSQLPlusOnOracleHome) {
-					listener.getLogger().println("found SQL*Plus on " + new File(oracleHome).getAbsolutePath());
+					listener.getLogger().println(FOUND_SQL_PLUS_ON + new File(oracleHome).getAbsolutePath());
 					args.add(oracleHome + fileSeparator + sqlplus);
 				} else if (slaveMachine) {
 					listener.getLogger().println("SQL*Plus directory: " + oracleHome + fileSeparator + BIN_DIR);
@@ -542,7 +546,7 @@ public class SQLPlusRunner implements Serializable {
 
 			int exitCode = 0;
 			if (slaveMachine) {
-				FilePath pwdDir = ((AbstractBuild<?, ?>) build).getModuleRoot();
+				FilePath pwdDir = workspace;
 				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
 						.pwd(pwdDir).join();
 			} else {

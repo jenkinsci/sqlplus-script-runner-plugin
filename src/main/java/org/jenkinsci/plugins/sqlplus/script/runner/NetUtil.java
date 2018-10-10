@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 
 public class NetUtil {
 
+	private NetUtil() {
+	}
 
 	public static String getHostName() {
 

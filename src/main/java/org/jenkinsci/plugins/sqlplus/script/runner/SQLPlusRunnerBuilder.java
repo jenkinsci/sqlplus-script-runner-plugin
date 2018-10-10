@@ -50,14 +50,14 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	private final String scriptType;
 	private final String script;
 	private final String scriptContent;
-	
-	private   String customOracleHome;
-	private   String customSQLPlusHome;
-	private   String customTNSAdmin;
 
-	
+	private String customOracleHome;
+	private String customSQLPlusHome;
+	private String customTNSAdmin;
+
 	@DataBoundConstructor
-	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,String scriptContent) {
+	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
+			String scriptContent) {
 		this.credentialsId = credentialsId;
 		this.user = null;
 		this.password = null;
@@ -66,8 +66,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		this.script = script;
 		this.scriptContent = scriptContent;
 	}
-	
-	@Deprecated
+
 	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
 			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin) {
 		this.credentialsId = credentialsId;
@@ -81,7 +80,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		this.customSQLPlusHome = customSQLPlusHome;
 		this.customTNSAdmin = customTNSAdmin;
 	}
-	
+
 	@DataBoundSetter
 	public void setCustomOracleHome(String customOracleHome) {
 		this.customOracleHome = customOracleHome;
@@ -164,10 +163,11 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 		EnvVars env = build.getEnvironment(listener);
 
-		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher,
+		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher, workspace,
 				getDescriptor().isHideSQLPlusVersion(), usr, pwd, env.expand(instance), env.expand(sqlScript),
-				getDescriptor().globalOracleHome,getDescriptor().globalSQLPlusHome ,getDescriptor().globalTNSAdmin, scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin,
-				getDescriptor().tryToDetectOracleHome, getDescriptor().isDebug());
+				getDescriptor().globalOracleHome, getDescriptor().globalSQLPlusHome, getDescriptor().globalTNSAdmin,
+				scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin, getDescriptor().tryToDetectOracleHome,
+				getDescriptor().isDebug());
 
 		try {
 
@@ -202,7 +202,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		private String globalOracleHome;
 		private String globalSQLPlusHome;
 		private String globalTNSAdmin;
-		
+
 		public DescriptorImpl() {
 			load();
 		}
