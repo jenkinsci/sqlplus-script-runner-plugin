@@ -257,7 +257,7 @@ public class SQLPlusRunner implements Serializable {
 		}
 
 		if (script == null || script.length() < 1) {
-			throw new RuntimeException(Messages.SQLPlusRunner_missingScript(build.getRootDir()));
+			throw new RuntimeException(Messages.SQLPlusRunner_missingScript(workspace));
 		}
 
 		String instanceStr = LOCAL_DATABASE_MSG;
@@ -289,8 +289,8 @@ public class SQLPlusRunner implements Serializable {
 			if (slaveMachine) {
 				scriptFilePath = new FilePath(new File(workspace.getRemote() + fileSeparator + script));
 			} else {
-				if (build.getRootDir() != null) {
-					strScript = build.getRootDir() + fileSeparator + script;
+				if (workspace!= null) {
+					strScript = workspace + fileSeparator + script;
 					if (strScript != null)
 						scriptFilePath = new FilePath(new File(strScript));
 				}
@@ -365,7 +365,7 @@ public class SQLPlusRunner implements Serializable {
 			String arg2 = scriptFilePath.getRemote();
 
 			if (debug)
-				listener.getLogger().println("Master Work Directory = " + build.getRootDir());
+				listener.getLogger().println("Master Work Directory = " + workspace);
 
 			if (hasCustomSQLPlusHome) {
 				args.add(customSQLPlusHome);
@@ -417,7 +417,7 @@ public class SQLPlusRunner implements Serializable {
 						.pwd(pwdDir).join();
 			} else {
 				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
-						.pwd(build.getRootDir()).join();
+						.pwd(workspace).join();
 			}
 
 			listener.getLogger().printf(Messages.SQLPlusRunner_processEnd() + " %d%n", exitCode);
@@ -551,7 +551,7 @@ public class SQLPlusRunner implements Serializable {
 						.pwd(pwdDir).join();
 			} else {
 				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
-						.pwd(build.getRootDir()).join();
+						.pwd(workspace).join();
 			}
 
 			listener.getLogger().printf(Messages.SQLPlusRunner_processEnd() + " %d%n", exitCode);
