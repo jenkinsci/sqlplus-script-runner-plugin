@@ -303,7 +303,7 @@ public class SQLPlusRunner implements Serializable {
 				listener.getLogger().println(DEBUG_MSG + "testing script " + scriptFilePath.getRemote());
 			if (!slaveMachine && scriptFilePath != null && !scriptFilePath.exists()) {
 				throw new RuntimeException(
-						Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote() + fileSeparator + script));
+						Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote()));
 			}
 			if (!slaveMachine && scriptFilePath != null && !FileUtil.hasExitCode(scriptFilePath))
 				FileUtil.addExitInTheEnd(scriptFilePath);
