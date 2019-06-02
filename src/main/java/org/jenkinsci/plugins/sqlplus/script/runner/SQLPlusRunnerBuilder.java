@@ -277,6 +277,14 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 			this.globalTNSAdmin = globalTNSAdmin;
 		}
 
+		public String getGlobalOracleHome() {
+			return globalOracleHome;
+		}
+
+		public void setGlobalOracleHome(String globalOracleHome) {
+			this.globalOracleHome = globalOracleHome;
+		}
+
 		@SuppressWarnings("deprecation")
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context) {
 			if (!(context instanceof AccessControlled ? (AccessControlled) context : Jenkins.getInstance())

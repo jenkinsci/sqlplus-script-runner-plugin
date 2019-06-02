@@ -138,19 +138,19 @@ public class SQLPlusRunner implements Serializable {
 
 	private String script;
 
-	private final String globalOracleHome;
+	private String globalOracleHome;
 
-	private final String globalSQLPlusHome;
+	private String globalSQLPlusHome;
 
-	private final String globalTNSAdmin;
+	private String globalTNSAdmin;
 
-	private final String customOracleHome;
+	private String customOracleHome;
 
 	private String customSQLPlusHome;
 
 	private String customTNSAdmin;
 
-	private final String scriptType;
+	private String scriptType;
 
 	private final boolean tryToDetectOracleHome;
 
@@ -167,11 +167,6 @@ public class SQLPlusRunner implements Serializable {
 		String selectedOracleHome = null;
 		String detectedOracleHome = null;
 		boolean slaveMachine = isSlaveMachine(launcher);
-
-		if (slaveMachine)
-			detectedOracleHome = build.getEnvironment(listener).get(ENV_ORACLE_HOME);
-		else
-			detectedOracleHome = System.getenv(ENV_ORACLE_HOME);
 
 		listener.getLogger().println(LINE);
 		listener.getLogger().println(MSG_GET_ORACLE_HOME);
@@ -204,6 +199,9 @@ public class SQLPlusRunner implements Serializable {
 		}
 
 		// custom ORACLE_HOME overrides everything
+		 
+		detectedOracleHome = build.getEnvironment(listener).get(ENV_ORACLE_HOME);
+		
 		if (customOracleHome != null && customOracleHome.length() > 0) {
 			if (debug)
 				listener.getLogger().println(DEBUG_MSG + MSG_CUSTOM_ORACLE_HOME);
