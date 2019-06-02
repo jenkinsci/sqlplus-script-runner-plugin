@@ -1,5 +1,12 @@
-# jenkins-plugin-sqlplus-script-runner
-Jenkins plugin - SQL*Plus Script Runner
+# Oficial plugin page (basic documentation + stats)
+
+https://plugins.jenkins.io/sqlplus-script-runner
+
+# Oficial wiki (basic documentation + user comments)
+
+https://wiki.jenkins.io/display/JENKINS/SQLPlus+Script+Runner+Plugin
+
+# Jenkins plugin - SQL*Plus Script Runner
 
 This plugin enables you run Oracle SQL\*Plus scripts on your Jenkins jobs ( _SQL\*Plus installation required!_ ).
 
