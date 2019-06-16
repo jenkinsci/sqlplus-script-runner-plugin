@@ -158,9 +158,6 @@ public class SQLPlusRunner implements Serializable {
 
 	/**
 	 * Main process to run SQLPlus
-	 *
-	 * @throws IOException
-	 * @throws InterruptedException
 	 */
 	public void run() throws IOException, InterruptedException {
 
@@ -450,10 +447,10 @@ public class SQLPlusRunner implements Serializable {
 	/**
 	 * Get SQL Plus version
 	 *
-	 * @param customSQLPlusHome
-	 * @param oracleHome
-	 * @param listener
-	 * @param launcher
+	 * @param customSQLPlusHome - custom SQL*Plus home 
+	 * @param oracleHome - Oracle Home
+	 * @param listener - Jenkins listener
+	 * @param launcher - Jenkins launcher
 	 */
 	public void runGetSQLPLusVersion(String customSQLPlusHome, String oracleHome, TaskListener listener,
 			Launcher launcher) {
