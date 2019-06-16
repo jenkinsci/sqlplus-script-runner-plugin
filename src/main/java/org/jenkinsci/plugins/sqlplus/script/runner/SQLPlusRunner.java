@@ -411,10 +411,10 @@ public class SQLPlusRunner implements Serializable {
 
 			if (slaveMachine) {
 				FilePath pwdDir = workspace;
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
+				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
 						.pwd(pwdDir).join();
 			} else {
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
+				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
 						.pwd(workspace).join();
 			}
 
@@ -545,10 +545,10 @@ public class SQLPlusRunner implements Serializable {
 			int exitCode = 0;
 			if (slaveMachine) {
 				FilePath pwdDir = workspace;
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
+				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
 						.pwd(pwdDir).join();
 			} else {
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener)).stdout(listener)
+				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
 						.pwd(workspace).join();
 			}
 
