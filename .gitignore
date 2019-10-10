@@ -4,6 +4,8 @@ target/
 .classpath
 .settings
 work/
+.factorypath
+.attach*
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

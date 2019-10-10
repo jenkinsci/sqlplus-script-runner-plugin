@@ -191,8 +191,9 @@ public class SQLPlusRunner implements Serializable {
 				listener.getLogger().println(DEBUG_MSG + MSG_GLOBAL_TNS_ADMIN_SELECTED);
 			listener.getLogger().println(LINE);
 			listener.getLogger().println(MSG_GLOBAL_TNS_ADMIN);
-			hasCustomTNSAdmin = true;
 			customTNSAdmin = globalTNSAdmin;
+			hasCustomTNSAdmin = true;
+			listener.getLogger().println("TNS_ADMIN >>> " + customTNSAdmin);
 		}
 
 		// custom ORACLE_HOME overrides everything
@@ -321,6 +322,12 @@ public class SQLPlusRunner implements Serializable {
 
 			if (hasCustomTNSAdmin) {
 				envVars.put(ENV_TNS_ADMIN, customTNSAdmin);
+				boolean findTNSNAMES = FileUtil.findFile(TNSNAMES_ORA, new File(customTNSAdmin));
+				if (findTNSNAMES) {
+					if (debug) listener.getLogger().println(DEBUG_MSG + "found TNSNAMES.ORA on " + new File(customTNSAdmin).getAbsolutePath());
+				} else {
+				   throw new RuntimeException(Messages.SQLPlusRunner_missingTNSNAMES());
+			    }
 			} else if (slaveMachine) {
 				envVars.put(ENV_TNS_ADMIN, selectedOracleHome);
 			} else {
