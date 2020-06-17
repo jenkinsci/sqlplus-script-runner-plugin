@@ -4,6 +4,10 @@ target/
 .classpath
 .settings
 work/
+work1/
+work2/
+work3/
+work4/
 .factorypath
 .attach*
 

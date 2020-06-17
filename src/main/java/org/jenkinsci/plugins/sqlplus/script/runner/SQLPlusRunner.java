@@ -45,6 +45,8 @@ public class SQLPlusRunner implements Serializable {
 	private static final String AT = "@";
 
 	private static final String SLASH = "/";
+	
+	private static final String DOUBLE_QUOTES = "\"";
 
 	private static final String MSG_ERROR = Messages.SQLPlusRunner_error();
 
@@ -359,7 +361,7 @@ public class SQLPlusRunner implements Serializable {
 			// create command arguments
 			ArgumentListBuilder args = new ArgumentListBuilder();
 
-			String arg1 = user + SLASH + password;
+			String arg1 = user + SLASH + DOUBLE_QUOTES + password + DOUBLE_QUOTES;
 			if (instance != null) {
 				arg1 = arg1 + AT + instance;
 			}
