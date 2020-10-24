@@ -148,7 +148,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		}
 
 		List<StandardUsernamePasswordCredentials> lookupCredentials = CredentialsProvider.lookupCredentials(
-				StandardUsernamePasswordCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, null, null);
+				StandardUsernamePasswordCredentials.class, Jenkins.get(), ACL.SYSTEM, null, null);
 		CredentialsMatcher credentialsMatcher = CredentialsMatchers.withId(credentialsId);
 		StandardUsernamePasswordCredentials credentials = CredentialsMatchers.firstOrNull(lookupCredentials,
 				credentialsMatcher);
