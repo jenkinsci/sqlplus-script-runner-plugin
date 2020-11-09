@@ -25,10 +25,25 @@ public class MessageUtil {
 	public static final String MSG_GET_SQL_PLUS_VERSION = Messages.SQLPlusRunner_gettingSQLPlusVersion();
 	public static final String MSG_ORACLE_HOME_MISSING = Messages.SQLPlusRunner_missingOracleHome();
 	public static final String MSG_TRY_DETECTED_ORACLE_HOME = Messages.SQLPlusRunner_tryToDetectOracleHome();
-	public static final String MSG_GLOBAL_ORACLE_HOME_SELECTED_ANYWAY = Messages
-			.SQLPlusRunner_globalOracleHomeSelectedAnyway();
+	public static final String MSG_GLOBAL_ORACLE_HOME_SELECTED_ANYWAY = Messages.SQLPlusRunner_globalOracleHomeSelectedAnyway();
+	public static final String MSG_DEBUG = Messages.SQLPlusRunner_debugMsg();	        
+	public static final String MSG_DEBUG_DETECTED_HOST = Messages.SQLPlusRunner_debugDetectedHost(); 
+	public static final String MSG_DEBUG_SLAVE_MACHINE = Messages.SQLPlusRunner_debugSlaveMachine();
+	public static final String MSG_DEBUG_EXEC_FILE = Messages.SQLPlusRunner_debugExecFile(); 
+	public static final String MSG_DEBUG_EXEC_DIR = Messages.SQLPlusRunner_debugExecDir();
+	public static final String MSG_DEBUG_TEST_DIR = Messages.SQLPlusRunner_debugTestDir();
+	public static final String MSG_DEBUG_TEST_SCRIPT = Messages.SQLPlusRunner_debugTestScript();
+	public static final String MSG_DEBUG_WORK_DIR = Messages.SQLPlusRunner_debugWorkDir(); 
+	public static final String MSG_DEBUG_STATEMENT = Messages.SQLPlusRunner_debugStatement();
+	public static final String MSG_DEBUG_ENV_ORACLE_HOME = Messages.SQLPlusRunner_debugEnvOracleHome();
+	public static final String MSG_DEBUG_ENV_LD_LIBRARY_PATH= Messages.SQLPlusRunner_debugEnvLDLibraryPath(); 
+	public static final String MSG_DEBUG_ENV_TNS_ADMIN = Messages.SQLPlusRunner_debugEnvTNSAdmin();
+	public static final String MSG_DEBUG_FOUND_TNSNAMES = Messages.SQLPlusRunner_debugFoundTnsNames();  
+	public static final String MSG_EXIT_CODE = Messages.SQLPlusRunner_exitCode(); 
+	public static final String MSG_EQUALS = " = ";
+	public static final String MSG_SPACE = " ";
+	public static final String MSG_COLON = ": ";
 	public static final String LOCAL_DATABASE_MSG = "local";
-	public static final String DEBUG_MSG = "[DEBUG] ";
 	public static final String HIDDEN_PASSWORD = "********";
 	public static final String LINE = Messages.SQLPlusRunner_line();
 
@@ -41,9 +56,6 @@ public class MessageUtil {
 	public static final String ENV_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
 	public static final String ENV_ORACLE_HOME = "ORACLE_HOME";
 	public static final String ENV_TNS_ADMIN = "TNS_ADMIN";
-	public static final String ENV_PASSWORD = "HIDDEN_PASSWORD";
-	public static final String ENV_PASSWORD_FOR_WINDOWS = "%HIDDEN_PASSWORD%";
-	public static final String ENV_PASSWORD_FOR_LINUX = "$HIDDEN_PASSWORD";
 
 	// for SQL*Plus
 	public static final String SQLPLUS_TRY_LOGIN_JUST_ONCE = "-L";

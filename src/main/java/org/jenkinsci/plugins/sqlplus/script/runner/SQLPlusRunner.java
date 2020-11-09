@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,9 +14,8 @@ import hudson.util.ArgumentListBuilder;
 /**
  * Run SQLPlus commands on the slave, or master of Jenkins.
  */
-@SuppressFBWarnings
 public class SQLPlusRunner implements Serializable {
- 
+
 	private static final long serialVersionUID = -2426963507463371935L;
 
 	private static final int PROCESS_EXIT_CODE_SUCCESSFUL = 0;
@@ -83,14 +81,13 @@ public class SQLPlusRunner implements Serializable {
 
 	private final boolean debug;
 
-
 	/**
 	 * Get SQL Plus version
 	 *
-	 * @param customSQLPlusHome - custom SQL*Plus home 
-	 * @param oracleHome - Oracle Home
-	 * @param listener - Jenkins listener
-	 * @param launcher - Jenkins launcher
+	 * @param customSQLPlusHome - custom SQL*Plus home
+	 * @param oracleHome        - Oracle Home
+	 * @param listener          - Jenkins listener
+	 * @param launcher          - Jenkins launcher
 	 */
 	public void runGetSQLPLusVersion(String customSQLPlusHome, String oracleHome, TaskListener listener,
 			Launcher launcher) {
@@ -101,8 +98,9 @@ public class SQLPlusRunner implements Serializable {
 
 		boolean slaveMachine = EnvUtil.isSlaveMachine(launcher);
 		if (debug) {
-			listener.getLogger().println(" detected host = " + NetUtil.getHostName());
-			listener.getLogger().println(" slave machine ? " + slaveMachine);
+			listener.getLogger()
+					.println(MessageUtil.MSG_DEBUG_DETECTED_HOST + MessageUtil.MSG_EQUALS + NetUtil.getHostName());
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_SLAVE_MACHINE + MessageUtil.MSG_COLON + slaveMachine);
 		}
 
 		boolean hasCustomSQLPlusHome = false;
@@ -124,7 +122,7 @@ public class SQLPlusRunner implements Serializable {
 		try {
 			String sqlplus = MessageUtil.SQLPLUS;
 			String fileSeparator = File.separator;
-			if (EnvUtil.isWindowsOS(slaveMachine,listener,build)) {
+			if (EnvUtil.isWindowsOS(slaveMachine, listener, build)) {
 				sqlplus = MessageUtil.SQLPLUS_FOR_WINDOWS;
 				fileSeparator = MessageUtil.WINDOWS_FILE_SEPARATOR;
 			}
@@ -132,16 +130,18 @@ public class SQLPlusRunner implements Serializable {
 			EnvVars envVars = new EnvVars();
 			envVars.put(MessageUtil.ENV_ORACLE_HOME, oracleHome);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "ORACLE_HOME = " + oracleHome);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_ORACLE_HOME
+						+ MessageUtil.MSG_EQUALS + oracleHome);
 			envVars.put(MessageUtil.ENV_LD_LIBRARY_PATH, oracleHome + fileSeparator + MessageUtil.LIB_DIR);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "LD_LIBRARY_PATH = " + oracleHome + fileSeparator + MessageUtil.LIB_DIR);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_LD_LIBRARY_PATH
+						+ MessageUtil.MSG_EQUALS + oracleHome + fileSeparator + MessageUtil.LIB_DIR);
 
 			// create command arguments
 			ArgumentListBuilder args = new ArgumentListBuilder();
 
 			if (debug)
-				listener.getLogger().println("SQL*Plus exec file = " + sqlplus);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG_EXEC_FILE + MessageUtil.MSG_EQUALS + sqlplus);
 
 			if (hasCustomSQLPlusHome) {
 				args.add(customSQLPlusHome);
@@ -153,14 +153,16 @@ public class SQLPlusRunner implements Serializable {
 				boolean findSQLPlusOnOracleHome = FileUtil.findFile(sqlplus, new File(oracleHome));
 
 				if (findSQLPlusOnOracleHomeBin) {
-					listener.getLogger().println(
-							MessageUtil.FOUND_SQL_PLUS_ON + new File(oracleHome + fileSeparator + MessageUtil.BIN_DIR).getAbsolutePath());
+					listener.getLogger().println(MessageUtil.FOUND_SQL_PLUS_ON
+							+ new File(oracleHome + fileSeparator + MessageUtil.BIN_DIR).getAbsolutePath());
 					args.add(oracleHome + fileSeparator + MessageUtil.BIN_DIR + fileSeparator + sqlplus);
 				} else if (findSQLPlusOnOracleHome) {
-					listener.getLogger().println(MessageUtil.FOUND_SQL_PLUS_ON + new File(oracleHome).getAbsolutePath());
+					listener.getLogger()
+							.println(MessageUtil.FOUND_SQL_PLUS_ON + new File(oracleHome).getAbsolutePath());
 					args.add(oracleHome + fileSeparator + sqlplus);
 				} else if (slaveMachine) {
-					listener.getLogger().println("SQL*Plus directory: " + oracleHome + fileSeparator + MessageUtil.BIN_DIR);
+					listener.getLogger().println(MessageUtil.MSG_DEBUG_EXEC_DIR + MessageUtil.MSG_COLON + oracleHome
+							+ fileSeparator + MessageUtil.BIN_DIR);
 					args.add(oracleHome + fileSeparator + MessageUtil.BIN_DIR + fileSeparator + sqlplus);
 				} else {
 					throw new RuntimeException(Messages.SQLPlusRunner_missingSQLPlus());
@@ -171,23 +173,17 @@ public class SQLPlusRunner implements Serializable {
 
 			if (debug) {
 				listener.getLogger().println(MessageUtil.LINE);
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "Statement:");
+				listener.getLogger().println(MessageUtil.MSG_DEBUG_STATEMENT + MessageUtil.MSG_COLON);
 				for (String a : args.toList()) {
-					listener.getLogger().print(a + " ");
+					listener.getLogger().print(a + MessageUtil.MSG_SPACE);
 				}
-				listener.getLogger().println(" ");
+				listener.getLogger().println(MessageUtil.MSG_SPACE);
 				listener.getLogger().println(MessageUtil.LINE);
 			}
 
 			int exitCode = 0;
-			if (slaveMachine) {
-				FilePath pwdDir = workspace;
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
-						.pwd(pwdDir).join();
-			} else {
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
-						.pwd(workspace).join();
-			}
+			exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars))
+					.stdout(listener).pwd(workspace).join();
 
 			listener.getLogger().printf(Messages.SQLPlusRunner_processEnd() + " %d%n", exitCode);
 
@@ -200,7 +196,7 @@ public class SQLPlusRunner implements Serializable {
 		}
 		listener.getLogger().println(MessageUtil.LINE);
 	}
-	
+
 	/**
 	 * Main process to run SQLPlus
 	 */
@@ -216,10 +212,10 @@ public class SQLPlusRunner implements Serializable {
 		// custom SQLPLUS_HOME overrides file location
 		if (customSQLPlusHome != null && customSQLPlusHome.length() > 0) {
 			listener.getLogger().println(MessageUtil.MSG_CUSTOM_SQLPLUS_HOME);
-			listener.getLogger().println("SQL*Plus >>> " + customSQLPlusHome);
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_EXEC_DIR + MessageUtil.MSG_COLON + customSQLPlusHome);
 		} else if (globalSQLPlusHome != null && globalSQLPlusHome.length() > 0) {
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_GLOBAL_SQLPLUS_HOME_SELECTED);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_SQLPLUS_HOME_SELECTED);
 			listener.getLogger().println(MessageUtil.LINE);
 			listener.getLogger().println(MessageUtil.MSG_GLOBAL_SQLPLUS_HOME);
 			customSQLPlusHome = globalSQLPlusHome;
@@ -229,46 +225,46 @@ public class SQLPlusRunner implements Serializable {
 		boolean hasCustomTNSAdmin = false;
 		if (customTNSAdmin != null && customTNSAdmin.length() > 0) {
 			listener.getLogger().println(MessageUtil.MSG_CUSTOM_TNS_ADMIN);
-			listener.getLogger().println("TNS_ADMIN >>> " + customTNSAdmin);
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN + MessageUtil.MSG_COLON + customTNSAdmin);
 			hasCustomTNSAdmin = true;
 		} else if (globalTNSAdmin != null && globalTNSAdmin.length() > 0) {
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_GLOBAL_TNS_ADMIN_SELECTED);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_TNS_ADMIN_SELECTED);
 			listener.getLogger().println(MessageUtil.LINE);
 			listener.getLogger().println(MessageUtil.MSG_GLOBAL_TNS_ADMIN);
 			customTNSAdmin = globalTNSAdmin;
 			hasCustomTNSAdmin = true;
-			listener.getLogger().println("TNS_ADMIN >>> " + customTNSAdmin);
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN + MessageUtil.MSG_COLON + customTNSAdmin);
 		}
 
 		// custom ORACLE_HOME overrides everything
-		 
 		detectedOracleHome = build.getEnvironment(listener).get(MessageUtil.ENV_ORACLE_HOME);
-		
+
 		if (customOracleHome != null && customOracleHome.length() > 0) {
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_CUSTOM_ORACLE_HOME);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_CUSTOM_ORACLE_HOME);
 			listener.getLogger().println(MessageUtil.LINE);
 			listener.getLogger().println(MessageUtil.MSG_CUSTOM_ORACLE_HOME);
 			selectedOracleHome = customOracleHome;
 			// global ORACLE_HOME comes next
 		} else if (globalOracleHome != null && globalOracleHome.length() > 0) {
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_GLOBAL_ORACLE_HOME_SELECTED);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_ORACLE_HOME_SELECTED);
 			listener.getLogger().println(MessageUtil.LINE);
 			listener.getLogger().println(MessageUtil.MSG_GLOBAL_ORACLE_HOME);
 			selectedOracleHome = globalOracleHome;
 			// now try to detect ORACLE_HOME
 		} else if (tryToDetectOracleHome && detectedOracleHome != null) {
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_TRY_DETECTED_ORACLE_HOME);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_TRY_DETECTED_ORACLE_HOME);
 			listener.getLogger().println(MessageUtil.LINE);
 			listener.getLogger().println(MessageUtil.MSG_USING_DETECTED_ORACLE_HOME);
 			selectedOracleHome = detectedOracleHome;
 		} else {
 			// nothing works, get global ORACLE_HOME
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.MSG_GLOBAL_ORACLE_HOME_SELECTED_ANYWAY);
+				listener.getLogger()
+						.println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_ORACLE_HOME_SELECTED_ANYWAY);
 			selectedOracleHome = globalOracleHome;
 		}
 
@@ -277,12 +273,15 @@ public class SQLPlusRunner implements Serializable {
 		}
 
 		if (debug)
-			listener.getLogger().println(" detected host = " + NetUtil.getHostName());
+			listener.getLogger()
+					.println(MessageUtil.MSG_DEBUG_DETECTED_HOST + MessageUtil.MSG_EQUALS + NetUtil.getHostName());
 
+		// can't find Oracle Home!
 		if (selectedOracleHome == null || selectedOracleHome.length() < 1) {
 			throw new RuntimeException(MessageUtil.MSG_ORACLE_HOME_MISSING);
 		}
 
+		// finding SQL*Plus
 		boolean hasCustomSQLPlusHome = false;
 		if (customSQLPlusHome != null && customSQLPlusHome.length() > 0) {
 			hasCustomSQLPlusHome = true;
@@ -291,12 +290,14 @@ public class SQLPlusRunner implements Serializable {
 		if (!slaveMachine && !hasCustomSQLPlusHome) {
 			File directoryAccessTest = new File(selectedOracleHome);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "testing directory " + directoryAccessTest.getAbsolutePath());
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_TEST_DIR
+						+ MessageUtil.MSG_COLON + directoryAccessTest.getAbsolutePath());
 			if (!directoryAccessTest.exists()) {
 				throw new RuntimeException(Messages.SQLPlusRunner_wrongOracleHome(selectedOracleHome));
 			}
 		}
 
+		// finding SQL script
 		if (script == null || script.length() < 1) {
 			throw new RuntimeException(Messages.SQLPlusRunner_missingScript(workspace));
 		}
@@ -312,27 +313,27 @@ public class SQLPlusRunner implements Serializable {
 
 		String sqlplus = MessageUtil.SQLPLUS;
 		String fileSeparator = File.separator;
-		String hidePasswordEnv = MessageUtil.ENV_PASSWORD_FOR_LINUX;
-		if (EnvUtil.isWindowsOS(slaveMachine,listener,build)) {
+		if (EnvUtil.isWindowsOS(slaveMachine, listener, build)) {
 			sqlplus = MessageUtil.SQLPLUS_FOR_WINDOWS;
 			fileSeparator = MessageUtil.WINDOWS_FILE_SEPARATOR;
-			hidePasswordEnv = MessageUtil.ENV_PASSWORD_FOR_WINDOWS;
 		}
 
 		FilePath tempScript = null;
 		FilePath scriptFilePath = null;
 		if (ScriptType.userDefined.name().equals(scriptType)) {
-			listener.getLogger().println(MessageUtil.MSG_DEFINED_SCRIPT + " " + user + MessageUtil.SLASH + MessageUtil.HIDDEN_PASSWORD + MessageUtil.AT + instanceStr);
+			listener.getLogger().println(MessageUtil.MSG_DEFINED_SCRIPT + MessageUtil.MSG_SPACE + user
+					+ MessageUtil.SLASH + MessageUtil.HIDDEN_PASSWORD + MessageUtil.AT + instanceStr);
 			scriptFilePath = FileUtil.createTempScript(build, workspace, script, slaveMachine);
 			tempScript = scriptFilePath;
-			listener.getLogger().println(MessageUtil.MSG_TEMP_SCRIPT + " " + scriptFilePath.absolutize().toURI());
+			listener.getLogger()
+					.println(MessageUtil.MSG_TEMP_SCRIPT + MessageUtil.MSG_SPACE + scriptFilePath.absolutize().toURI());
 		} else {
 
 			String strScript = null;
 			if (slaveMachine) {
 				scriptFilePath = new FilePath(new File(workspace.getRemote() + fileSeparator + script));
 			} else {
-				if (workspace!= null) {
+				if (workspace != null) {
 					strScript = workspace + fileSeparator + script;
 					if (strScript != null)
 						scriptFilePath = new FilePath(new File(strScript));
@@ -340,13 +341,15 @@ public class SQLPlusRunner implements Serializable {
 			}
 
 			if (scriptFilePath != null)
-				listener.getLogger().println(MessageUtil.MSG_SCRIPT + " " + scriptFilePath.getRemote() + " " + MessageUtil.ON + " " + user
-						+ MessageUtil.SLASH + MessageUtil.HIDDEN_PASSWORD + MessageUtil.AT + instanceStr);
+				listener.getLogger()
+						.println(MessageUtil.MSG_SCRIPT + MessageUtil.MSG_SPACE + scriptFilePath.getRemote()
+								+ MessageUtil.MSG_SPACE + MessageUtil.ON + MessageUtil.MSG_SPACE + user
+								+ MessageUtil.SLASH + MessageUtil.HIDDEN_PASSWORD + MessageUtil.AT + instanceStr);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "testing script " + scriptFilePath.getRemote());
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_TEST_SCRIPT
+						+ MessageUtil.MSG_COLON + scriptFilePath.getRemote());
 			if (!slaveMachine && scriptFilePath != null && !scriptFilePath.exists()) {
-				throw new RuntimeException(
-						Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote()));
+				throw new RuntimeException(Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote()));
 			}
 			if (!slaveMachine && scriptFilePath != null && !FileUtil.hasExitCode(scriptFilePath))
 				FileUtil.addExitInTheEnd(scriptFilePath);
@@ -354,50 +357,66 @@ public class SQLPlusRunner implements Serializable {
 
 		listener.getLogger().println(MessageUtil.LINE);
 
+		// running script
 		int exitCode = 0;
 		try {
-			// and the extra ones for the plugin
+			// calculating environment variables
 			EnvVars envVars = new EnvVars();
 			envVars.put(MessageUtil.ENV_ORACLE_HOME, selectedOracleHome);
-			envVars.put(MessageUtil.ENV_PASSWORD, password);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "ORACLE_HOME = " + selectedOracleHome);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_ORACLE_HOME
+						+ MessageUtil.MSG_EQUALS + selectedOracleHome);
 			envVars.put(MessageUtil.ENV_LD_LIBRARY_PATH,
 					selectedOracleHome + fileSeparator + MessageUtil.LIB_DIR + File.pathSeparator + selectedOracleHome);
 			if (debug)
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + "LD_LIBRARY_PATH = " + selectedOracleHome + fileSeparator
-						+ MessageUtil.LIB_DIR + File.pathSeparator + selectedOracleHome);
+				listener.getLogger()
+						.println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_LD_LIBRARY_PATH
+								+ MessageUtil.MSG_EQUALS + selectedOracleHome + fileSeparator + MessageUtil.LIB_DIR
+								+ File.pathSeparator + selectedOracleHome);
 
-			if (hasCustomTNSAdmin) {
+			if (hasCustomTNSAdmin && !slaveMachine) {
 				envVars.put(MessageUtil.ENV_TNS_ADMIN, customTNSAdmin);
 				boolean findTNSNAMES = FileUtil.findFile(MessageUtil.TNSNAMES_ORA, new File(customTNSAdmin));
 				if (findTNSNAMES) {
-					if (debug) listener.getLogger().println(MessageUtil.DEBUG_MSG + "found TNSNAMES.ORA on " + new File(customTNSAdmin).getAbsolutePath());
+					if (debug)
+						listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_FOUND_TNSNAMES
+								+ MessageUtil.MSG_COLON + new File(customTNSAdmin).getAbsolutePath());
 				} else {
-				   throw new RuntimeException(Messages.SQLPlusRunner_missingTNSNAMES());
-			    }
+					throw new RuntimeException(Messages.SQLPlusRunner_missingTNSNAMES());
+				}
 			} else if (slaveMachine) {
 				envVars.put(MessageUtil.ENV_TNS_ADMIN, selectedOracleHome);
+				if (debug) {
+					listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN
+							+ MessageUtil.MSG_EQUALS + selectedOracleHome);
+				}
 			} else {
-				boolean findTNSNAMESOracleHome = FileUtil.findFile(MessageUtil.TNSNAMES_ORA, new File(selectedOracleHome));
+				boolean findTNSNAMESOracleHome = FileUtil.findFile(MessageUtil.TNSNAMES_ORA,
+						new File(selectedOracleHome));
 				boolean findTNSNAMESOracleHomeNetworkAdmin = FileUtil.findFile(MessageUtil.TNSNAMES_ORA,
-						new File(selectedOracleHome + fileSeparator + MessageUtil.NET_DIR + fileSeparator + MessageUtil.NET_ADM_DIR));
+						new File(selectedOracleHome + fileSeparator + MessageUtil.NET_DIR + fileSeparator
+								+ MessageUtil.NET_ADM_DIR));
 				if (findTNSNAMESOracleHomeNetworkAdmin) {
-					envVars.put(MessageUtil.ENV_TNS_ADMIN,
-							selectedOracleHome + fileSeparator + MessageUtil.NET_DIR + fileSeparator + MessageUtil.NET_ADM_DIR);
+					envVars.put(MessageUtil.ENV_TNS_ADMIN, selectedOracleHome + fileSeparator + MessageUtil.NET_DIR
+							+ fileSeparator + MessageUtil.NET_ADM_DIR);
 					if (debug) {
-						listener.getLogger().println(MessageUtil.DEBUG_MSG + "found TNSNAMES.ORA on "
-								+ new File(selectedOracleHome + fileSeparator + MessageUtil.NET_DIR + fileSeparator + MessageUtil.NET_ADM_DIR)
-										.getAbsolutePath());
-						listener.getLogger().println(MessageUtil.DEBUG_MSG + "TNS_ADMIN = " + selectedOracleHome + fileSeparator
-								+ MessageUtil.NET_DIR + fileSeparator + MessageUtil.NET_ADM_DIR);
+						listener.getLogger()
+								.println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_FOUND_TNSNAMES
+										+ MessageUtil.MSG_COLON
+										+ new File(selectedOracleHome + fileSeparator + MessageUtil.NET_DIR
+												+ fileSeparator + MessageUtil.NET_ADM_DIR).getAbsolutePath());
+						listener.getLogger()
+								.println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN
+										+ MessageUtil.MSG_EQUALS + selectedOracleHome + fileSeparator
+										+ MessageUtil.NET_DIR + fileSeparator + MessageUtil.NET_ADM_DIR);
 					}
 				} else if (findTNSNAMESOracleHome) {
 					envVars.put(MessageUtil.ENV_TNS_ADMIN, selectedOracleHome);
 					if (debug) {
-						listener.getLogger().println(
-								MessageUtil.DEBUG_MSG + "found TNSNAMES.ORA on " + new File(selectedOracleHome).getAbsolutePath());
-						listener.getLogger().println(MessageUtil.DEBUG_MSG + "TNS_ADMIN = " + selectedOracleHome);
+						listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_FOUND_TNSNAMES
+								+ MessageUtil.MSG_COLON + new File(selectedOracleHome).getAbsolutePath());
+						listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN
+								+ MessageUtil.MSG_EQUALS + selectedOracleHome);
 					}
 				} else {
 					throw new RuntimeException(Messages.SQLPlusRunner_missingTNSNAMES());
@@ -407,22 +426,23 @@ public class SQLPlusRunner implements Serializable {
 			// create command arguments
 			ArgumentListBuilder args = new ArgumentListBuilder();
 
-			String arg1 = user + MessageUtil.SLASH + MessageUtil.DOUBLE_QUOTES + hidePasswordEnv + MessageUtil.DOUBLE_QUOTES;
-			
-			if (instance != null && instance.trim().length()>0) {
-				arg1 = arg1 + MessageUtil.AT + instance.trim();
+			String argUserPasswordInstance = user + MessageUtil.SLASH + MessageUtil.DOUBLE_QUOTES + password
+					+ MessageUtil.DOUBLE_QUOTES;
+
+			if (instance != null && instance.trim().length() > 0) {
+				argUserPasswordInstance = argUserPasswordInstance + MessageUtil.AT + instance.trim();
 			}
 
-			String arg2 = scriptFilePath.getRemote();
+			String argSQLscript = scriptFilePath.getRemote();
 
 			if (debug)
-				listener.getLogger().println("Master Work Directory = " + workspace);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG_WORK_DIR + MessageUtil.MSG_EQUALS + workspace);
 
 			if (hasCustomSQLPlusHome) {
 				args.add(customSQLPlusHome);
 			} else {
 
-				listener.getLogger().println("SQL*Plus exec file = " + sqlplus);
+				listener.getLogger().println(MessageUtil.MSG_DEBUG_EXEC_FILE + MessageUtil.MSG_EQUALS + sqlplus);
 
 				boolean findSQLPlusOnOracleHomeBin = FileUtil.findFile(sqlplus,
 						new File(selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR));
@@ -431,16 +451,17 @@ public class SQLPlusRunner implements Serializable {
 
 				if (findSQLPlusOnOracleHomeBin) {
 					if (debug)
-						listener.getLogger().println(MessageUtil.DEBUG_MSG + MessageUtil.FOUND_SQL_PLUS_ON
+						listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.FOUND_SQL_PLUS_ON
 								+ new File(selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR).getAbsolutePath());
 					args.add(selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR + fileSeparator + sqlplus);
 				} else if (findSQLPlusOnOracleHome) {
 					if (debug)
-						listener.getLogger().println(
-								MessageUtil.DEBUG_MSG + MessageUtil.FOUND_SQL_PLUS_ON + new File(selectedOracleHome).getAbsolutePath());
+						listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.FOUND_SQL_PLUS_ON
+								+ new File(selectedOracleHome).getAbsolutePath());
 					args.add(selectedOracleHome + fileSeparator + sqlplus);
 				} else if (slaveMachine) {
-					listener.getLogger().println("SQL*Plus directory: " + selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR);
+					listener.getLogger().println(MessageUtil.MSG_DEBUG_EXEC_DIR + MessageUtil.MSG_COLON
+							+ selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR);
 					args.add(selectedOracleHome + fileSeparator + MessageUtil.BIN_DIR + fileSeparator + sqlplus);
 				} else {
 					throw new RuntimeException(Messages.SQLPlusRunner_missingSQLPlus());
@@ -448,28 +469,12 @@ public class SQLPlusRunner implements Serializable {
 			}
 
 			args.add(MessageUtil.SQLPLUS_TRY_LOGIN_JUST_ONCE);
-			args.add(arg1);
-			args.add(MessageUtil.AT + arg2);
+			args.addMasked(argUserPasswordInstance);
+			args.add(MessageUtil.AT + argSQLscript);
 
-			if (debug) {
-				listener.getLogger().println(MessageUtil.DEBUG_MSG + " Statement: ");
-				listener.getLogger().println(MessageUtil.LINE);
-				for (String a : args.toList()) {
-					listener.getLogger().print(a + " ");
-				}
-				listener.getLogger().println(" ");
-				listener.getLogger().println(MessageUtil.LINE);
-				listener.getLogger().println(" ");
-			}
-
-			if (slaveMachine) {
-				FilePath pwdDir = workspace;
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
-						.pwd(pwdDir).join();
-			} else {
-				exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars)).stdout(listener)
-						.pwd(workspace).join();
-			}
+			// launch SQL*Plus with arguments
+			exitCode = launcher.launch().cmds(args).envs(build.getEnvironment(listener).overrideAll(envVars))
+					.stdout(listener).pwd(workspace).join();
 
 			listener.getLogger().printf(Messages.SQLPlusRunner_processEnd() + " %d%n", exitCode);
 
@@ -492,7 +497,7 @@ public class SQLPlusRunner implements Serializable {
 
 		if (exitCode != PROCESS_EXIT_CODE_SUCCESSFUL) {
 			listener.getLogger().println(MessageUtil.LINE);
-			listener.getLogger().println("Exit code: " + exitCode);
+			listener.getLogger().println(MessageUtil.MSG_EXIT_CODE + MessageUtil.MSG_COLON + exitCode);
 			listener.getLogger().println(MessageUtil.LINE);
 			throw new RuntimeException(Messages.SQLPlusRunner_processErrorEnd());
 		}
