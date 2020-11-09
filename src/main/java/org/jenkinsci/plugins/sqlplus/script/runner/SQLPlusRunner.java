@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -14,6 +15,7 @@ import hudson.util.ArgumentListBuilder;
 /**
  * Run SQLPlus commands on the slave, or master of Jenkins.
  */
+@SuppressFBWarnings
 public class SQLPlusRunner implements Serializable {
 
 	private static final long serialVersionUID = -2426963507463371935L;

@@ -10,6 +10,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
+/*
+ * In order to run this test Oracle SQL*Plus is needed 
+ */
 public class TestSQLPlus {
 
 	private static final String SCRIPT_SQL = "script.sql";
