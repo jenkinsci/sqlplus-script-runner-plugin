@@ -26,6 +26,14 @@
 	<f:entry title="${%Set global TNS_ADMIN}" field="globalTNSAdmin" >
 	   <f:textbox />
 	</f:entry>
-  
+
+	<f:entry title="${%Set global NLS_LANG}" field="globalNLSLang" >
+	   <f:textbox />
+	</f:entry>
+	
+	<f:entry title="${%Set global SQLPATH}" field="globalSQLPath" >
+	   <f:textbox />
+	</f:entry>
+	  
  </f:section>
 </j:jelly>

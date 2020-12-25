@@ -76,7 +76,7 @@
 				<groupId>org.jenkins-ci.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
 				<configuration>
-				 <defaultHost>localhost</defaultHost>
+				 <defaultHost>cascao</defaultHost>
 				</configuration>
 			</plugin>
 			<plugin>

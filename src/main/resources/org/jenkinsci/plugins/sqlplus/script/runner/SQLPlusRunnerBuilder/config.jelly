@@ -27,4 +27,10 @@
   <f:entry title="${%Custom TNS_ADMIN}" field="customTNSAdmin" >
     <f:textbox />
   </f:entry>
+  <f:entry title="${%Custom NLS_LANG}" field="customNLSLang" >
+    <f:textbox />
+  </f:entry>
+  <f:entry title="${%Custom SQLPATH}" field="customSQLPath" >
+    <f:textbox />
+  </f:entry>
 </j:jelly>

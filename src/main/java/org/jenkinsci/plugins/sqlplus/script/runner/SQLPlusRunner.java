@@ -25,8 +25,8 @@ public class SQLPlusRunner implements Serializable {
 	public SQLPlusRunner(Run<?, ?> build, TaskListener listener, Launcher launcher, FilePath workspace,
 			boolean isHideSQLPlusVersion, String user, String password, String instance, String script,
 			String globalOracleHome, String globalSQLPlusHome, String globalTNSAdmin, String scriptType,
-			String customOracleHome, String customSQLPlusHome, String customTNSAdmin, boolean tryToDetectOracleHome,
-			boolean debug) {
+			String customOracleHome, String customSQLPlusHome, String customTNSAdmin,String customNLSLang,
+			String customSQLPath,boolean tryToDetectOracleHome,boolean debug) {
 		this.build = build;
 		this.listener = listener;
 		this.launcher = launcher;
@@ -43,6 +43,8 @@ public class SQLPlusRunner implements Serializable {
 		this.customOracleHome = customOracleHome;
 		this.customSQLPlusHome = customSQLPlusHome;
 		this.customTNSAdmin = customTNSAdmin;
+		this.customNLSLang = customNLSLang;
+		this.customSQLPath = customSQLPath;
 		this.tryToDetectOracleHome = tryToDetectOracleHome;
 		this.debug = debug;
 	}
@@ -70,12 +72,20 @@ public class SQLPlusRunner implements Serializable {
 	private String globalSQLPlusHome;
 
 	private String globalTNSAdmin;
+	
+	private String globalNLSLang;
+	
+	private String globalSQLPath;
 
 	private String customOracleHome;
 
 	private String customSQLPlusHome;
 
 	private String customTNSAdmin;
+	
+	private String customNLSLang;
+	
+	private String customSQLPath;
 
 	private String scriptType;
 
@@ -239,6 +249,38 @@ public class SQLPlusRunner implements Serializable {
 			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN + MessageUtil.MSG_COLON + customTNSAdmin);
 		}
 
+		// custom NLS_LANG
+		boolean hasCustomNLSLang = false;
+		if (customNLSLang != null && customNLSLang.length() > 0) {
+			listener.getLogger().println(MessageUtil.MSG_CUSTOM_NLS_LANG);
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_NLS_LANG + MessageUtil.MSG_COLON + customNLSLang);
+			hasCustomNLSLang = true;
+		} else if (globalNLSLang != null && globalNLSLang.length() > 0) {
+			if (debug)
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_NLS_LANG_SELECTED);
+			listener.getLogger().println(MessageUtil.LINE);
+			listener.getLogger().println(MessageUtil.MSG_GLOBAL_NLS_LANG);
+			customNLSLang = globalNLSLang;
+			hasCustomNLSLang = true;
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_NLS_LANG + MessageUtil.MSG_COLON + customNLSLang);
+		}
+		
+		// custom SQLPATH
+		boolean hasCustomSQLPath = false;
+		if (customSQLPath != null && customSQLPath.length() > 0) {
+			listener.getLogger().println(MessageUtil.MSG_CUSTOM_SQLPATH);
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_SQLPATH + MessageUtil.MSG_COLON + customSQLPath);
+			hasCustomSQLPath = true;
+		} else if (globalSQLPath != null && globalSQLPath.length() > 0) {
+			if (debug)
+				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_SQLPATH_SELECTED);
+			listener.getLogger().println(MessageUtil.LINE);
+			listener.getLogger().println(MessageUtil.MSG_GLOBAL_SQLPATH);
+			customSQLPath = globalSQLPath;
+			hasCustomSQLPath = true;
+			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_SQLPATH + MessageUtil.MSG_COLON + customSQLPath);
+		}
+		
 		// custom ORACLE_HOME overrides everything
 		detectedOracleHome = build.getEnvironment(listener).get(MessageUtil.ENV_ORACLE_HOME);
 
@@ -364,6 +406,11 @@ public class SQLPlusRunner implements Serializable {
 		try {
 			// calculating environment variables
 			EnvVars envVars = new EnvVars();
+			if (hasCustomNLSLang) 
+				envVars.put(MessageUtil.ENV_NLS_LANG, customNLSLang);
+			if (hasCustomSQLPath) 
+				envVars.put(MessageUtil.ENV_SQLPATH, customSQLPath);
+				
 			envVars.put(MessageUtil.ENV_ORACLE_HOME, selectedOracleHome);
 			if (debug)
 				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_ORACLE_HOME

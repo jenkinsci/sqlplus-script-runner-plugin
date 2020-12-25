@@ -54,6 +54,8 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	private String customOracleHome;
 	private String customSQLPlusHome;
 	private String customTNSAdmin;
+	private String customNLSLang;
+	private String customSQLPath;
 
 	@DataBoundConstructor
 	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
@@ -68,7 +70,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	}
 
 	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
-			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin) {
+			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin,String customNLSLang,String customSQLPath) {
 		this.credentialsId = credentialsId;
 		this.user = null;
 		this.password = null;
@@ -79,6 +81,8 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		this.customOracleHome = customOracleHome;
 		this.customSQLPlusHome = customSQLPlusHome;
 		this.customTNSAdmin = customTNSAdmin;
+		this.customNLSLang = customNLSLang;
+		this.customSQLPath = customSQLPath;
 	}
 
 	@DataBoundSetter
@@ -132,6 +136,24 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		return customTNSAdmin;
 	}
 
+	public String getCustomNLSLang() {
+		return customNLSLang;
+	}
+
+	@DataBoundSetter
+	public void setCustomNLSLang(String customNLSLang) {
+		this.customNLSLang = customNLSLang;
+	}
+
+	public String getCustomSQLPath() {
+		return customSQLPath;
+	}
+
+	@DataBoundSetter
+	public void setCustomSQLPath(String customSQLPath) {
+		this.customSQLPath = customSQLPath;
+	}
+
 	public String getCredentialsId() {
 		return credentialsId;
 	}
@@ -153,8 +175,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		StandardUsernamePasswordCredentials credentials = CredentialsMatchers.firstOrNull(lookupCredentials,
 				credentialsMatcher);
 		if (credentials == null && (this.user == null)) {
-			throw new AbortException("Invalid credentials " + credentialsId
-					+ ". Failed to initialize credentials or load user and pass");
+			throw new AbortException(Messages.SQLPlusRunner_errorInvalidCredentials(credentialsId));
 		}
 		final Secret password = credentials.getPassword();
 
@@ -166,7 +187,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher, workspace,
 				getDescriptor().isHideSQLPlusVersion(), usr, pwd, env.expand(instance), env.expand(sqlScript),
 				getDescriptor().globalOracleHome, getDescriptor().globalSQLPlusHome, getDescriptor().globalTNSAdmin,
-				scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin, getDescriptor().tryToDetectOracleHome,
+				scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin, customNLSLang, customSQLPath, getDescriptor().tryToDetectOracleHome,
 				getDescriptor().isDebug());
 
 		try {
@@ -193,6 +214,8 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		private static final String GLOBAL_ORACLE_HOME = "globalOracleHome";
 		private static final String GLOBAL_SQLPLUS_HOME = "globalSQLPlusHome";
 		private static final String GLOBAL_TNS_ADMIN = "globalTNSAdmin";
+		private static final String GLOBAL_NLS_LANG = "globalNLSLang";
+		private static final String GLOBAL_SQL_PATH = "globalSQLPath";
 		private static final String HIDE_SQL_PLUS_VERSION = "hideSQLPlusVersion";
 		private static final String TRY_TO_DETECT_ORACLE_HOME = "tryToDetectOracleHome";
 		private static final String DEBUG = "debug";
@@ -202,6 +225,9 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		private String globalOracleHome;
 		private String globalSQLPlusHome;
 		private String globalTNSAdmin;
+		private String globalNLSLang;
+		private String globalSQLPath;
+		
 
 		public DescriptorImpl() {
 			load();
@@ -223,6 +249,8 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 			globalOracleHome = formData.getString(GLOBAL_ORACLE_HOME);
 			globalSQLPlusHome = formData.getString(GLOBAL_SQLPLUS_HOME);
 			globalTNSAdmin = formData.getString(GLOBAL_TNS_ADMIN);
+			globalNLSLang = formData.getString(GLOBAL_NLS_LANG);
+			globalSQLPath = formData.getString(GLOBAL_SQL_PATH);
 			tryToDetectOracleHome = formData.getBoolean(TRY_TO_DETECT_ORACLE_HOME);
 			debug = formData.getBoolean(DEBUG);
 			save();
@@ -275,6 +303,22 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 		public void setGlobalTNSAdmin(String globalTNSAdmin) {
 			this.globalTNSAdmin = globalTNSAdmin;
+		}
+
+		public String getGlobalNLSLang() {
+			return globalNLSLang;
+		}
+
+		public void setGlobalNLSLang(String globalNLSLang) {
+			this.globalNLSLang = globalNLSLang;
+		}
+
+		public String getGlobalSQLPath() {
+			return globalSQLPath;
+		}
+
+		public void setGlobalSQLPath(String globalSQLPath) {
+			this.globalSQLPath = globalSQLPath;
 		}
 
 		public String getGlobalOracleHome() {

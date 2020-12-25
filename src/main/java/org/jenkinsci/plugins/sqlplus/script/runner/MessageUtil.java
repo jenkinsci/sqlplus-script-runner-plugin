@@ -14,13 +14,19 @@ public class MessageUtil {
 	public static final String MSG_CUSTOM_ORACLE_HOME = Messages.SQLPlusRunner_usingCustomOracleHome();
 	public static final String MSG_CUSTOM_SQLPLUS_HOME = Messages.SQLPlusRunner_usingCustomSQLPlusHome();
 	public static final String MSG_CUSTOM_TNS_ADMIN = Messages.SQLPlusRunner_usingCustomTNSAdmin();
+	public static final String MSG_CUSTOM_NLS_LANG = Messages.SQLPlusRunner_usingCustomNLSLang();
+	public static final String MSG_CUSTOM_SQLPATH = Messages.SQLPlusRunner_usingCustomSQLPath();
 	public static final String MSG_GLOBAL_ORACLE_HOME = Messages.SQLPlusRunner_usingGlobalOracleHome();
 	public static final String MSG_GLOBAL_SQLPLUS_HOME = Messages.SQLPlusRunner_usingGlobalSQLPlusHome();
 	public static final String MSG_GLOBAL_TNS_ADMIN = Messages.SQLPlusRunner_usingGlobalTNSAdmin();
+	public static final String MSG_GLOBAL_NLS_LANG = Messages.SQLPlusRunner_usingGlobalNLSLang();
+	public static final String MSG_GLOBAL_SQLPATH = Messages.SQLPlusRunner_usingGlobalSQLPath();
 	public static final String MSG_USING_DETECTED_ORACLE_HOME = Messages.SQLPlusRunner_usingDetectedOracleHome();
 	public static final String MSG_GLOBAL_ORACLE_HOME_SELECTED = Messages.SQLPlusRunner_globalOracleHomeSelected();
 	public static final String MSG_GLOBAL_SQLPLUS_HOME_SELECTED = Messages.SQLPlusRunner_globalSQLPlusHomeSelected();
 	public static final String MSG_GLOBAL_TNS_ADMIN_SELECTED = Messages.SQLPlusRunner_globalTNSAdminSelected();
+	public static final String MSG_GLOBAL_NLS_LANG_SELECTED = Messages.SQLPlusRunner_globalNLSLangSelected();
+	public static final String MSG_GLOBAL_SQLPATH_SELECTED = Messages.SQLPlusRunner_globalSQLPathSelected();
 	public static final String MSG_ERROR = Messages.SQLPlusRunner_error();
 	public static final String MSG_GET_SQL_PLUS_VERSION = Messages.SQLPlusRunner_gettingSQLPlusVersion();
 	public static final String MSG_ORACLE_HOME_MISSING = Messages.SQLPlusRunner_missingOracleHome();
@@ -38,6 +44,8 @@ public class MessageUtil {
 	public static final String MSG_DEBUG_ENV_ORACLE_HOME = Messages.SQLPlusRunner_debugEnvOracleHome();
 	public static final String MSG_DEBUG_ENV_LD_LIBRARY_PATH= Messages.SQLPlusRunner_debugEnvLDLibraryPath(); 
 	public static final String MSG_DEBUG_ENV_TNS_ADMIN = Messages.SQLPlusRunner_debugEnvTNSAdmin();
+	public static final String MSG_DEBUG_ENV_NLS_LANG = Messages.SQLPlusRunner_debugEnvNLSLang();
+	public static final String MSG_DEBUG_ENV_SQLPATH = Messages.SQLPlusRunner_debugEnvSQLPath();
 	public static final String MSG_DEBUG_FOUND_TNSNAMES = Messages.SQLPlusRunner_debugFoundTnsNames();  
 	public static final String MSG_EXIT_CODE = Messages.SQLPlusRunner_exitCode(); 
 	public static final String MSG_EQUALS = " = ";
@@ -56,6 +64,8 @@ public class MessageUtil {
 	public static final String ENV_LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
 	public static final String ENV_ORACLE_HOME = "ORACLE_HOME";
 	public static final String ENV_TNS_ADMIN = "TNS_ADMIN";
+	public static final String ENV_NLS_LANG = "NLS_LANG";
+	public static final String ENV_SQLPATH = "SQLPATH";
 
 	// for SQL*Plus
 	public static final String SQLPLUS_TRY_LOGIN_JUST_ONCE = "-L";

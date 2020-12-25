@@ -76,6 +76,8 @@ node {
 * customOracleHome
 * customSQLPlusHome
 * customTNSAdmin
+* customNLSLang
+* customSQLPath
 
 # Having problems?
 
