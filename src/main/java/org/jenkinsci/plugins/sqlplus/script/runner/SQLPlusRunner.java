@@ -25,8 +25,8 @@ public class SQLPlusRunner implements Serializable {
 	public SQLPlusRunner(Run<?, ?> build, TaskListener listener, Launcher launcher, FilePath workspace,
 			boolean isHideSQLPlusVersion, String user, String password, String instance, String script,
 			String globalOracleHome, String globalSQLPlusHome, String globalTNSAdmin, String scriptType,
-			String customOracleHome, String customSQLPlusHome, String customTNSAdmin,String customNLSLang,
-			String customSQLPath,boolean tryToDetectOracleHome,boolean debug) {
+			String customOracleHome, String customSQLPlusHome, String customTNSAdmin, String customNLSLang,
+			String customSQLPath, boolean tryToDetectOracleHome, boolean debug) {
 		this.build = build;
 		this.listener = listener;
 		this.launcher = launcher;
@@ -72,9 +72,9 @@ public class SQLPlusRunner implements Serializable {
 	private String globalSQLPlusHome;
 
 	private String globalTNSAdmin;
-	
+
 	private String globalNLSLang;
-	
+
 	private String globalSQLPath;
 
 	private String customOracleHome;
@@ -82,9 +82,9 @@ public class SQLPlusRunner implements Serializable {
 	private String customSQLPlusHome;
 
 	private String customTNSAdmin;
-	
+
 	private String customNLSLang;
-	
+
 	private String customSQLPath;
 
 	private String scriptType;
@@ -264,7 +264,7 @@ public class SQLPlusRunner implements Serializable {
 			hasCustomNLSLang = true;
 			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_NLS_LANG + MessageUtil.MSG_COLON + customNLSLang);
 		}
-		
+
 		// custom SQLPATH
 		boolean hasCustomSQLPath = false;
 		if (customSQLPath != null && customSQLPath.length() > 0) {
@@ -280,7 +280,7 @@ public class SQLPlusRunner implements Serializable {
 			hasCustomSQLPath = true;
 			listener.getLogger().println(MessageUtil.MSG_DEBUG_ENV_SQLPATH + MessageUtil.MSG_COLON + customSQLPath);
 		}
-		
+
 		// custom ORACLE_HOME overrides everything
 		detectedOracleHome = build.getEnvironment(listener).get(MessageUtil.ENV_ORACLE_HOME);
 
@@ -406,11 +406,11 @@ public class SQLPlusRunner implements Serializable {
 		try {
 			// calculating environment variables
 			EnvVars envVars = new EnvVars();
-			if (hasCustomNLSLang) 
+			if (hasCustomNLSLang)
 				envVars.put(MessageUtil.ENV_NLS_LANG, customNLSLang);
-			if (hasCustomSQLPath) 
+			if (hasCustomSQLPath)
 				envVars.put(MessageUtil.ENV_SQLPATH, customSQLPath);
-				
+
 			envVars.put(MessageUtil.ENV_ORACLE_HOME, selectedOracleHome);
 			if (debug)
 				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_ORACLE_HOME
@@ -434,7 +434,10 @@ public class SQLPlusRunner implements Serializable {
 					throw new RuntimeException(Messages.SQLPlusRunner_missingTNSNAMES());
 				}
 			} else if (slaveMachine) {
-				envVars.put(MessageUtil.ENV_TNS_ADMIN, selectedOracleHome);
+				if (hasCustomTNSAdmin)
+					envVars.put(MessageUtil.ENV_TNS_ADMIN, customTNSAdmin);
+				else
+					envVars.put(MessageUtil.ENV_TNS_ADMIN, selectedOracleHome);
 				if (debug) {
 					listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN
 							+ MessageUtil.MSG_EQUALS + selectedOracleHome);
