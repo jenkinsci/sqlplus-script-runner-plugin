@@ -343,7 +343,9 @@ public class SQLPlusRunner implements Serializable {
 
 		// finding SQL script
 		if (script == null || script.length() < 1) {
-			throw new RuntimeException(Messages.SQLPlusRunner_missingScript(workspace));
+			listener.getLogger().println(MessageUtil.LINE);
+			listener.getLogger().println(MessageUtil.MSG_WARNING + Messages.SQLPlusRunner_missingScript(workspace));
+			listener.getLogger().println(MessageUtil.LINE);
 		}
 
 		String instanceStr = MessageUtil.LOCAL_DATABASE_MSG;
@@ -393,10 +395,13 @@ public class SQLPlusRunner implements Serializable {
 				listener.getLogger().println(MessageUtil.MSG_DEBUG + MessageUtil.MSG_DEBUG_TEST_SCRIPT
 						+ MessageUtil.MSG_COLON + scriptFilePath.getRemote());
 			if (!slaveMachine && scriptFilePath != null && !scriptFilePath.exists()) {
-				throw new RuntimeException(Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote()));
+				listener.getLogger().println(MessageUtil.LINE);
+				listener.getLogger().println(MessageUtil.MSG_WARNING + Messages.SQLPlusRunner_missingScript(scriptFilePath.getRemote()));
+				listener.getLogger().println(MessageUtil.LINE);
+			} else {
+				if (!slaveMachine && scriptFilePath != null && scriptFilePath.exists() && !FileUtil.hasExitCode(scriptFilePath))
+					FileUtil.addExitInTheEnd(scriptFilePath);
 			}
-			if (!slaveMachine && scriptFilePath != null && !FileUtil.hasExitCode(scriptFilePath))
-				FileUtil.addExitInTheEnd(scriptFilePath);
 		}
 
 		listener.getLogger().println(MessageUtil.LINE);

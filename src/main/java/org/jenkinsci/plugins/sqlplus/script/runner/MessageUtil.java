@@ -33,6 +33,7 @@ public class MessageUtil {
 	public static final String MSG_TRY_DETECTED_ORACLE_HOME = Messages.SQLPlusRunner_tryToDetectOracleHome();
 	public static final String MSG_GLOBAL_ORACLE_HOME_SELECTED_ANYWAY = Messages.SQLPlusRunner_globalOracleHomeSelectedAnyway();
 	public static final String MSG_DEBUG = Messages.SQLPlusRunner_debugMsg();	        
+	public static final String MSG_WARNING= Messages.SQLPlusRunner_warningMsg();	        
 	public static final String MSG_DEBUG_DETECTED_HOST = Messages.SQLPlusRunner_debugDetectedHost(); 
 	public static final String MSG_DEBUG_SLAVE_MACHINE = Messages.SQLPlusRunner_debugSlaveMachine();
 	public static final String MSG_DEBUG_EXEC_FILE = Messages.SQLPlusRunner_debugExecFile(); 
