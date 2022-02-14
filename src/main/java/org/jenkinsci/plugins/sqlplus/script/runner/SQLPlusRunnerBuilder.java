@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.sqlplus.script.runner;
 import java.io.IOException;
 import java.util.List;
 
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -173,13 +174,13 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		String pwd = this.password;
 
 		if(credentialsId != null){
-			List<StandardUsernamePasswordCredentials> lookupCredentials = CredentialsProvider.lookupCredentials(
-					StandardUsernamePasswordCredentials.class, Jenkins.get(), ACL.SYSTEM, null, null);
-			CredentialsMatcher credentialsMatcher = CredentialsMatchers.withId(credentialsId);
-			StandardUsernamePasswordCredentials credentials = CredentialsMatchers.firstOrNull(lookupCredentials,
-					credentialsMatcher);
-			usr = credentials == null ? this.user : credentials.getUsername();
-			pwd = credentials == null ? this.password : credentials.getPassword().getPlainText();
+			final UsernamePasswordCredentials credentials =  CredentialsProvider.findCredentialById(credentialsId,
+																	 StandardUsernamePasswordCredentials.class,
+																	 build, null, null);
+			if (credentials != null){
+				usr = credentials.getUsername();
+				pwd = credentials.getPassword().getPlainText();
+			}
 		}
 
 		if (usr == null || pwd == null) {
