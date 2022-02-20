@@ -3,6 +3,7 @@ package org.jenkinsci.plugins.sqlplus.script.runner;
 import java.io.IOException;
 import java.util.List;
 
+import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -58,22 +59,22 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	private String customSQLPath;
 
 	@DataBoundConstructor
-	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
+	public SQLPlusRunnerBuilder(String credentialsId, String user, String password, String instance, String scriptType, String script,
 			String scriptContent) {
 		this.credentialsId = credentialsId;
-		this.user = null;
-		this.password = null;
+		this.user = user;
+		this.password = password;
 		this.instance = instance;
 		this.scriptType = scriptType;
 		this.script = script;
 		this.scriptContent = scriptContent;
 	}
 
-	public SQLPlusRunnerBuilder(String credentialsId, String instance, String scriptType, String script,
+	public SQLPlusRunnerBuilder(String credentialsId, String user, String password, String instance, String scriptType, String script,
 			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin,String customNLSLang,String customSQLPath) {
 		this.credentialsId = credentialsId;
-		this.user = null;
-		this.password = null;
+		this.user = user;
+		this.password = password;
 		this.instance = instance;
 		this.scriptType = scriptType;
 		this.script = script;
@@ -169,18 +170,22 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 			sqlScript = script;
 		}
 
-		List<StandardUsernamePasswordCredentials> lookupCredentials = CredentialsProvider.lookupCredentials(
-				StandardUsernamePasswordCredentials.class, Jenkins.get(), ACL.SYSTEM, null, null);
-		CredentialsMatcher credentialsMatcher = CredentialsMatchers.withId(credentialsId);
-		StandardUsernamePasswordCredentials credentials = CredentialsMatchers.firstOrNull(lookupCredentials,
-				credentialsMatcher);
-		if (credentials == null && (this.user == null)) {
+		String usr = this.user;
+		String pwd = this.password;
+
+		if(credentialsId != null){
+			final UsernamePasswordCredentials credentials =  CredentialsProvider.findCredentialById(credentialsId,
+																	 StandardUsernamePasswordCredentials.class,
+																	 build, null, null);
+			if (credentials != null){
+				usr = credentials.getUsername();
+				pwd = credentials.getPassword().getPlainText();
+			}
+		}
+
+		if (usr == null || pwd == null) {
 			throw new AbortException(Messages.SQLPlusRunner_errorInvalidCredentials(credentialsId));
 		}
-		final Secret password = credentials.getPassword();
-
-		final String usr = credentials == null ? this.user : credentials.getUsername();
-		final String pwd = credentials == null ? this.password : password.getPlainText();
 
 		EnvVars env = build.getEnvironment(listener);
 
