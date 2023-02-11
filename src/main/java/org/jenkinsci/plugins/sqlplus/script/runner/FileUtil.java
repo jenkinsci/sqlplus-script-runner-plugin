@@ -62,12 +62,12 @@ public class FileUtil {
 	}
 
 	@SuppressWarnings("static-access")
-	public static FilePath createTempScript(Run<?, ?> build, FilePath workspace, String content, boolean slaveMachine)
+	public static FilePath createTempScript(Run<?, ?> build, FilePath workspace, String content, boolean agentMachine)
 			throws IOException, InterruptedException {
 
 		FilePath filePath = null;
 
-		if (slaveMachine) {
+		if (agentMachine) {
 			filePath = workspace.createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);
 		} else {
 			filePath = new FilePath(build.getRootDir().createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX));

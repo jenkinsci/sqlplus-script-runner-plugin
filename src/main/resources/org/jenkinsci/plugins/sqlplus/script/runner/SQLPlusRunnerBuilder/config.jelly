@@ -6,12 +6,15 @@
   <f:entry title="${%instance}" field="instance">
     <f:textbox />
   </f:entry>
+  <f:entry title="${%Connect AS SYSDBA}" field="isSysdba">
+ 	 <f:checkbox />
+  </f:entry>
   <f:entry name="scriptType" title="${%Script Type to run}" field="scriptType">
     <select name="scriptType">
-     <f:option value="file"        selected="${instance.scriptType == 'file'}"       >${%File Script}</f:option>
+     <f:option value="file"    selected="${instance.scriptType == 'file'}"       >${%File Script}</f:option>
      <f:option value="userDefined" selected="${instance.scriptType == 'userDefined'}">${%User Defined Script}</f:option>
     </select>
-  </f:entry>
+  </f:entry> 
   <f:entry title="${%File Script}" field="script">
     <f:textbox />
   </f:entry>

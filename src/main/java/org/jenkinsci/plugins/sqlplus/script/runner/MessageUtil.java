@@ -35,7 +35,7 @@ public class MessageUtil {
 	public static final String MSG_DEBUG = Messages.SQLPlusRunner_debugMsg();	        
 	public static final String MSG_WARNING= Messages.SQLPlusRunner_warningMsg();	        
 	public static final String MSG_DEBUG_DETECTED_HOST = Messages.SQLPlusRunner_debugDetectedHost(); 
-	public static final String MSG_DEBUG_SLAVE_MACHINE = Messages.SQLPlusRunner_debugSlaveMachine();
+	public static final String MSG_DEBUG_AGENT_MACHINE = Messages.SQLPlusRunner_debugAgentMachine();
 	public static final String MSG_DEBUG_EXEC_FILE = Messages.SQLPlusRunner_debugExecFile(); 
 	public static final String MSG_DEBUG_EXEC_DIR = Messages.SQLPlusRunner_debugExecDir();
 	public static final String MSG_DEBUG_TEST_DIR = Messages.SQLPlusRunner_debugTestDir();

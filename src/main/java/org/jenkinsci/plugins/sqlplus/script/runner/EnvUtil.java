@@ -14,25 +14,25 @@ public class EnvUtil {
 
 	private static final String OPERATION_SYSTEM = "os.name";
 
-	private static final String OPERATION_SYSTEM_SLAVE = "OS";
+	private static final String OPERATION_SYSTEM_AGENT = "OS";
 	
-	public static boolean isSlaveMachine(Launcher launcher) {
+	public static boolean isAgentMachine(Launcher launcher) {
 		VirtualChannel vc = launcher.getChannel();
-		boolean slaveMachine = true;
+		boolean agentMachine = true;
 		if (vc instanceof LocalChannel) {
-			slaveMachine = false;
+			agentMachine = false;
 		}
-		return slaveMachine;
+		return agentMachine;
 	}
 
-	public static boolean isWindowsOS(boolean slaveMachine,TaskListener listener,Run<?, ?> build) throws IOException, InterruptedException {
+	public static boolean isWindowsOS(boolean agentMachine,TaskListener listener,Run<?, ?> build) throws IOException, InterruptedException {
 
 		boolean isWindows = false;
 
-		if (slaveMachine) {
-			String osSlave = build.getEnvironment(listener).get(OPERATION_SYSTEM_SLAVE);
-			if (osSlave != null) {
-				isWindows = osSlave.toLowerCase().indexOf(WINDOWS_OS) >= 0;
+		if (agentMachine) {
+			String osAgent = build.getEnvironment(listener).get(OPERATION_SYSTEM_AGENT);
+			if (osAgent != null) {
+				isWindows = osAgent.toLowerCase().indexOf(WINDOWS_OS) >= 0;
 			}
 		} else {
 			String osMaster = System.getProperty(OPERATION_SYSTEM);

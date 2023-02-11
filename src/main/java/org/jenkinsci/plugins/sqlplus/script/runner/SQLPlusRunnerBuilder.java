@@ -44,6 +44,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	private final String credentialsId;
 	private final String user;
 	private final String password;
+	private final String isSysdba;
 	private final String instance;
 	private final String scriptType;
 	private final String script;
@@ -56,22 +57,24 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	private String customSQLPath;
 
 	@DataBoundConstructor
-	public SQLPlusRunnerBuilder(String credentialsId, String user, String password, String instance, String scriptType, String script,
+	public SQLPlusRunnerBuilder(String credentialsId, String user, String password,String isSysdba, String instance, String scriptType, String script,
 			String scriptContent) {
 		this.credentialsId = credentialsId;
 		this.user = user;
 		this.password = password;
+		this.isSysdba = isSysdba;
 		this.instance = instance;
 		this.scriptType = scriptType;
 		this.script = script;
 		this.scriptContent = scriptContent;
 	}
 
-	public SQLPlusRunnerBuilder(String credentialsId, String user, String password, String instance, String scriptType, String script,
+	public SQLPlusRunnerBuilder(String credentialsId, String user, String password, String isSysdba, String instance, String scriptType, String script,
 			String scriptContent, String customOracleHome, String customSQLPlusHome, String customTNSAdmin,String customNLSLang,String customSQLPath) {
 		this.credentialsId = credentialsId;
 		this.user = user;
 		this.password = password;
+		this.isSysdba = isSysdba;
 		this.instance = instance;
 		this.scriptType = scriptType;
 		this.script = script;
@@ -104,6 +107,10 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public String isSysdba() {
+		return isSysdba;
 	}
 
 	public String getInstance() {
@@ -184,10 +191,12 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 			throw new AbortException(Messages.SQLPlusRunner_errorInvalidCredentials(credentialsId));
 		}
 
+		boolean isConnectAsSysdba = "true".equalsIgnoreCase(isSysdba);
+		
 		EnvVars env = build.getEnvironment(listener);
 
 		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher, workspace,
-				getDescriptor().isHideSQLPlusVersion(), usr, pwd, env.expand(instance), env.expand(sqlScript),
+				getDescriptor().isHideSQLPlusVersion(), usr, pwd, isConnectAsSysdba, env.expand(instance), env.expand(sqlScript),
 				getDescriptor().globalOracleHome, getDescriptor().globalSQLPlusHome, getDescriptor().globalTNSAdmin,
 				scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin, customNLSLang, customSQLPath, getDescriptor().tryToDetectOracleHome,
 				getDescriptor().isDebug());
