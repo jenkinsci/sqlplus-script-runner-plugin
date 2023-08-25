@@ -50,6 +50,7 @@ node {
 * customNLSLang
 * customSQLPath
 * isSysDba
+* isHideSQLPlusVersion
 
 # Developer guide
 
