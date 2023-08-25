@@ -29,27 +29,31 @@ Download the last release and give it a try!
 # Using Pipeline
 
 ## user defined script
- 
+
+``` 
 node {
    echo 'SQLPlusRunner running user define script for system@xe'
    step([$class: 'SQLPlusRunnerBuilder',credentialsId:'system', instance:'xe',scriptType:'userDefined', script: '',scriptContent: 'select * from v$version'])
 }
+```
 
 ## file script
 
+```
 node {
    echo 'SQLPlusRunner running file script for system@xe'
    step([$class: 'SQLPlusRunnerBuilder',credentialsId:'system', instance:'xe',scriptType:'file', script: 'start.sql',scriptContent: ''])
 }
+```
 
 ### Optional parameters
 
-* customOracleHome
-* customSQLPlusHome
-* customTNSAdmin
-* customNLSLang
-* customSQLPath
-* isSysDba
+* customOracleHome - Custom ORACLE_HOME
+* customSQLPlusHome - Custom SQL*Plus (sqlplus/sqlplus.exe) location
+* customTNSAdmin - Custom TNS_ADMIN
+* customNLSLang - Custom NLS_LANG
+* customSQLPath - Custom SQL_PATH
+* isSysDba - Enable login AS SYSDBA
 
 # Developer guide
 
