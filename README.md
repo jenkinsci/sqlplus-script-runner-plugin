@@ -48,14 +48,16 @@ node {
 
 ### Optional parameters
 
-* customOracleHome - Custom ORACLE_HOME
-* customSQLPlusHome - Custom SQL*Plus (sqlplus/sqlplus.exe) location
-* customTNSAdmin - Custom TNS_ADMIN
-* customNLSLang - Custom NLS_LANG
-* customSQLPath - Custom SQL_PATH
-* isSysDba - Enable login AS SYSDBA
-* isHideSQLPlusVersion - Disable SQL*Version test
-
+| parameter           |  type    | description                |        sample             |
+|---------------------|:--------:|:--------------------------:|:-------------------------:|
+| customOracleHome    | varchar  | Custom ORACLE_HOME         |  C:\ORACLE\BIN   |
+| customSQLPlusHome    | varchar  | Custom SQL*Plus (sqlplus/sqlplus.exe) location         |  C:\SQLPLUS   |
+| customTNSAdmin    | varchar  | Custom TNS_ADMIN          |  C:\TNS   |
+| customNLSLang    | varchar  | Custom customNLSLang         |   ENGLISH_UNITED KINGDOM.WE8ISO8859P1  |
+| customSQLPath    | varchar  | Custom SQL_PATH         |  C:\MYSCRIPTS  |
+| isSysDba             | boolean  | Enable login AS SYSDBA  |  true |
+| isHideSQLPlusVersion | boolean  | EDisable SQL*Version test |  true |
+ 
 # Developer guide
 
 1. Fork repository
