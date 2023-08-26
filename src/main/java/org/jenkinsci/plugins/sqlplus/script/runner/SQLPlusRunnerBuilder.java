@@ -1,6 +1,9 @@
 package org.jenkinsci.plugins.sqlplus.script.runner;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
@@ -17,7 +20,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -36,8 +38,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
-
-@SuppressFBWarnings
+ 
 @Symbol("sqlplusrunner")
 public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
@@ -197,7 +198,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 		SQLPlusRunner sqlPlusRunner = new SQLPlusRunner(build, listener, launcher, workspace,
 				getDescriptor().isHideSQLPlusVersion(), usr, pwd, isConnectAsSysdba, env.expand(instance), env.expand(sqlScript),
-				getDescriptor().globalOracleHome, getDescriptor().globalSQLPlusHome, getDescriptor().globalTNSAdmin,
+				getDescriptor().globalOracleHome, getDescriptor().globalSQLPlusHome, getDescriptor().globalTNSAdmin, getDescriptor().globalNLSLang, getDescriptor().getGlobalSQLPath(),
 				scriptType, customOracleHome, customSQLPlusHome, customTNSAdmin, customNLSLang, customSQLPath, getDescriptor().tryToDetectOracleHome,
 				getDescriptor().isDebug());
 
@@ -219,8 +220,10 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 	}
 
 	@Extension
-	public static final class DescriptorImpl extends BuildStepDescriptor<Builder> {
+	public static final class DescriptorImpl extends BuildStepDescriptor<Builder>  implements Serializable {
 
+		private static final long serialVersionUID = 8902135359865137242L;
+		
 		private static final String DISPLAY_MESSAGE = "SQLPlus Script Runner";
 		private static final String GLOBAL_ORACLE_HOME = "globalOracleHome";
 		private static final String GLOBAL_SQLPLUS_HOME = "globalSQLPlusHome";
@@ -356,6 +359,14 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 			}, CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, context, ACL.SYSTEM, null,
 					null));
 		}
+	}
+	
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+	    stream.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	    stream.defaultReadObject();
 	}
 
 }

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>4.10</version>
+		<version>4.72</version>
 		<relativePath />
 	</parent>
 	<artifactId>sqlplus-script-runner</artifactId>
@@ -22,7 +22,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<java.level>8</java.level>
-		<jenkins.version>2.222.4</jenkins.version>
+		<jenkins.version>2.361</jenkins.version>
 	</properties>
 
 	<licenses>

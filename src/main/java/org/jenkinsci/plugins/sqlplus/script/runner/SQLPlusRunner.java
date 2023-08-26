@@ -2,9 +2,10 @@ package org.jenkinsci.plugins.sqlplus.script.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -15,7 +16,6 @@ import hudson.util.ArgumentListBuilder;
 /**
  * Run SQLPlus commands on the agent, or master of Jenkins.
  */
-@SuppressFBWarnings
 public class SQLPlusRunner implements Serializable {
 
 	private static final long serialVersionUID = -2426963507463371935L;
@@ -26,7 +26,7 @@ public class SQLPlusRunner implements Serializable {
 
 	public SQLPlusRunner(Run<?, ?> build, TaskListener listener, Launcher launcher, FilePath workspace,
 			boolean isHideSQLPlusVersion, String user, String password, boolean isSysdba, String instance, String script,
-			String globalOracleHome, String globalSQLPlusHome, String globalTNSAdmin, String scriptType,
+			String globalOracleHome, String globalSQLPlusHome, String globalTNSAdmin, String globalNLSLang, String globalSQLPath,  String scriptType,
 			String customOracleHome, String customSQLPlusHome, String customTNSAdmin, String customNLSLang,
 			String customSQLPath, boolean tryToDetectOracleHome, boolean debug) {
 		this.build = build;
@@ -42,6 +42,8 @@ public class SQLPlusRunner implements Serializable {
 		this.globalOracleHome = globalOracleHome;
 		this.globalSQLPlusHome = globalSQLPlusHome;
 		this.globalTNSAdmin = globalTNSAdmin;
+		this.globalNLSLang = globalNLSLang;
+		this.globalSQLPath = globalSQLPath;
 		this.scriptType = scriptType;
 		this.customOracleHome = customOracleHome;
 		this.customSQLPlusHome = customSQLPlusHome;
@@ -570,4 +572,12 @@ public class SQLPlusRunner implements Serializable {
 		listener.getLogger().println(MessageUtil.LINE);
 	}
 
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+	    stream.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+	    stream.defaultReadObject();
+	}
+	
 }
