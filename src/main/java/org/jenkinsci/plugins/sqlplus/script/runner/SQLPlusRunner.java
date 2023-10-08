@@ -356,10 +356,11 @@ public class SQLPlusRunner implements Serializable {
 			} else {
 				if (hasCustomSQLPath) {
 					strScript = customSQLPath + fileSeparator + script;
+					scriptFilePath = new FilePath(new File(strScript));
 				} else if (Objects.nonNull(workspace )) {
 					strScript = workspace + fileSeparator + script;
+					scriptFilePath = new FilePath(new File(strScript));
 				}
-				scriptFilePath = new FilePath(new File(strScript));
 			}
 
 			if (Objects.nonNull(scriptFilePath))
