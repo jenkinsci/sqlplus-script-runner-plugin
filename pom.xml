@@ -9,7 +9,7 @@
 		<relativePath />
 	</parent>
 	<artifactId>sqlplus-script-runner</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<name>SQLPlus Script Runner</name>
 	<description>Run SQLPlus scripts on Jenkins</description>
