@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
@@ -248,7 +249,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 		}
 
 		@Override
-		public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> aClass) {
+		public boolean isApplicable(Class<? extends AbstractProject> aClass) {
 			return true;
 		}
 
@@ -345,7 +346,7 @@ public class SQLPlusRunnerBuilder extends Builder implements SimpleBuildStep {
 
 		@SuppressWarnings("deprecation")
 		public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context) {
-			if (!(context instanceof AccessControlled ? (AccessControlled) context : Jenkins.getInstance())
+			if (!(Objects.requireNonNull(context instanceof AccessControlled ? (AccessControlled) context : Jenkins.getInstance()))
 					.hasPermission(Computer.CONFIGURE)) {
 				return new ListBoxModel();
 			}

@@ -65,7 +65,7 @@ public class FileUtil {
 	public static FilePath createTempScript(Run<?, ?> build, FilePath workspace, String content, boolean agentMachine)
 			throws IOException, InterruptedException {
 
-		FilePath filePath = null;
+		FilePath filePath;
 
 		if (agentMachine) {
 			filePath = workspace.createTempFile(SQL_TEMP_SCRIPT + System.currentTimeMillis(), SQL_PREFIX);

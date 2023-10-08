@@ -1,14 +1,18 @@
-# Summary
+# SQLPlus Script Runner
 
 This plugin enables you run [Oracle SQL\*Plus](http://www.orafaq.com/wiki/SQL*Plus_FAQ) scripts on your Jenkins jobs (user defined scripts or a script inside a workspace).
  
 *Oracle SQL\*Plus installation required!* 
 
+Java version: 11+
+
 # Releases
 
--   **1.x** - For Jenkins 1.x
-
--   **2.x** - For mainly Jenkins 2.x, credentials plugins implemented  and pipeline support
+| plugin version | Java version |                                  description                                  |
+|----------------|:------------:|:-----------------------------------------------------------------------------:|
+| **3.x**        |      11      |                                   Java 11 +                                   |
+| **2.x**       |      8     | For mainly Jenkins 2.x, credentials plugins implemented  and pipeline support |         
+|  **1.x**      |      7    |                              - For Jenkins 1.x                                | 
 
 # Quickstart 
 
@@ -136,11 +140,11 @@ Version 2.x :
 Pay attention to what version you are using in order to work with variables:
 
 
-| variable | Version 1.x |        Version 2.x        |
-|----------|:-----------:|:-------------------------:|
-| user     |       ok    | *replaced by credentials* |
-| password |      ok     | *replaced by credentials* |
-| instance |      ok     |             ok            |
+| variable            | Version 1.x |          Version 2.x           |
+|---------------------|:-----------:|:------------------------------:|
+| user                  |      ok     |   *replaced by credentials*    |
+| password        |     ok      |   *replaced by credentials*    |
+| instance           |     ok      |               ok               |
  
 
 You can use global variables for **user** and **instance**, first creating it in *Jenkins*→ *configuration* :
@@ -229,6 +233,7 @@ You should do in this order:
 
 Please [open a newissue](https://github.com/jenkinsci/sqlplus-script-runner-plugin/issues/new) and inform:
 
+-   sqlplus-script-runner-plugin version;
 -   Jenkins server Operation System;
 -   Jenkins version ;
 -   Where SQLPlus Script Runner is running (*local* machine or *slave*

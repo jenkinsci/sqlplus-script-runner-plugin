@@ -18,11 +18,7 @@ public class EnvUtil {
 	
 	public static boolean isAgentMachine(Launcher launcher) {
 		VirtualChannel vc = launcher.getChannel();
-		boolean agentMachine = true;
-		if (vc instanceof LocalChannel) {
-			agentMachine = false;
-		}
-		return agentMachine;
+		return !(vc instanceof LocalChannel);
 	}
 
 	public static boolean isWindowsOS(boolean agentMachine,TaskListener listener,Run<?, ?> build) throws IOException, InterruptedException {
@@ -32,12 +28,12 @@ public class EnvUtil {
 		if (agentMachine) {
 			String osAgent = build.getEnvironment(listener).get(OPERATION_SYSTEM_AGENT);
 			if (osAgent != null) {
-				isWindows = osAgent.toLowerCase().indexOf(WINDOWS_OS) >= 0;
+				isWindows = osAgent.toLowerCase().contains(WINDOWS_OS);
 			}
 		} else {
 			String osMaster = System.getProperty(OPERATION_SYSTEM);
 			if (osMaster != null) {
-				isWindows = osMaster.toLowerCase().indexOf(WINDOWS_OS) >= 0;
+				isWindows = osMaster.toLowerCase().contains(WINDOWS_OS);
 			}
 		}
 
