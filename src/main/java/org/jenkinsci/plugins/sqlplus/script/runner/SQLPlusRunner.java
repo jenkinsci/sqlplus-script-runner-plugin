@@ -227,7 +227,7 @@ public class SQLPlusRunner implements Serializable {
 			log(MessageUtil.MSG_CUSTOM_TNS_ADMIN);
 			log(MessageUtil.MSG_DEBUG_ENV_TNS_ADMIN + MessageUtil.MSG_COLON + customTNSAdmin);
 			hasCustomTNSAdmin = true;
-		} else if (Objects.nonNull(globalTNSAdmin ) && globalTNSAdmin.isEmpty()) {
+		} else if (Objects.nonNull(globalTNSAdmin ) && !globalTNSAdmin.isEmpty()) {
 			logDebug(MessageUtil.MSG_DEBUG + MessageUtil.MSG_GLOBAL_TNS_ADMIN_SELECTED);
 			line();
 			log(MessageUtil.MSG_GLOBAL_TNS_ADMIN);
