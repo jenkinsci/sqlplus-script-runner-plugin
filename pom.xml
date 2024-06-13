@@ -9,7 +9,7 @@
 		<relativePath />
 	</parent>
 	<artifactId>sqlplus-script-runner</artifactId>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>3.0.1</version>
 	<packaging>hpi</packaging>
 	<name>SQLPlus Script Runner</name>
 	<description>Run SQLPlus scripts on Jenkins</description>
@@ -41,7 +41,7 @@
 		<connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
 		<developerConnection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-		<tag>sqlplus-script-runner-3.0.0</tag>
+		<tag>sqlplus-script-runner-3.0.1</tag>
 	</scm>
 	<repositories>
 		<repository>
